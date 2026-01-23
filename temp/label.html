@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkbox Labels Example</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f0f2f5;
+        }
+        /* จัดการให้ Checkbox และเนื้อหาทั้งหมดอยู่ในแถวเดียวกันเสมอ */
+        .checkbox-item {
+            @apply flex items-center p-3 bg-gray-50 hover:bg-blue-50 rounded-xl transition-all cursor-pointer border border-transparent hover:border-blue-200;
+        }
+        /* ปรับแต่ง Dropdown ให้มีขอบ 1px และขนาดกะทัดรัด */
+        select {
+            @apply border border-gray-300 bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none px-2 py-0.5 mx-1 text-blue-700 font-bold rounded transition-all cursor-pointer shadow-sm;
+            min-width: 80px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white p-6 rounded-2xl shadow-xl max-w-lg w-full border border-gray-100">
+        <h2 class="text-xl font-bold mb-6 text-blue-900 border-b-2 border-blue-100 pb-3 flex items-center">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+            </svg>
+            รายละเอียดบรรจุภัณฑ์และการขนส่ง
+        </h2>
+        
+        <form id="packagingForm" class="space-y-2">
+            <div id="checkboxContainer" class="space-y-2"></div>
+
+            <button type="button" 
+                    onclick="handleSubmit()"
+                    class="w-full mt-4 bg-blue-700 text-white py-3 rounded-xl font-bold hover:bg-blue-800 transition-all shadow-md active:scale-95 shadow-blue-100">
+                บันทึกรายการ
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const CHECKBOX_OPTIONS = [
+            { id: 'pkg-25', label: 'Package 25 kg', type: 'standard' },
+            { id: 'prod-lock', label: 'Product Lock', type: 'standard' },
+            { 
+                id: 'pkg-custom', 
+                label: 'Package', 
+                type: 'dropdown', 
+                suffix: 'KG.', 
+                options: [750, 800, 900], 
+                defaultValue: 750 
+            },
+            { id: 'cover-plastic', label: 'Cover With Plastic Sheet/Film Hood', type: 'standard' },
+            { id: 'mt1-wood', label: '1MT/Pallet (Wood Pallet)', type: 'standard' },
+            { id: 'mt1-plastic', label: '1MT/Pallet (Plastic Pallet)', type: 'standard' },
+            { id: 'mt15-wood', label: '1.5MT/Pallet (Wood Pallet)', type: 'standard' },
+            { id: 'mt15-plastic', label: '1.5MT/Pallet (Plastic Pallet)', type: 'standard' },
+            { 
+                id: 'other', 
+                label: 'Other', 
+                type: 'dropdown', 
+                options: ['WARP', 'อื่นๆ...'], 
+                defaultValue: 'WARP',
+                isDashed: true 
+            }
+        ];
+
+        function renderCheckboxes() {
+            const container = document.getElementById('checkboxContainer');
+            
+            const html = CHECKBOX_OPTIONS.map(item => {
+                let contentHtml = '';
+                
+                if (item.type === 'dropdown') {
+                    const optionsHtml = item.options.map(opt => 
+                        `<option value="${opt}" ${opt === item.defaultValue ? 'selected' : ''}>${opt}</option>`
+                    ).join('');
+                    
+                    // จัดการให้ label และ select อยู่ใน flex เดียวกันเพื่อไม่ให้หลุดแถว
+                    contentHtml = `
+                        <div class="flex items-center">
+                            <span class="whitespace-nowrap">${item.label}</span>
+                            <select id="select-${item.id}" class="my-0 h-8">
+                                ${optionsHtml}
+                            </select>
+                            ${item.suffix ? `<span class="whitespace-nowrap">${item.suffix}</span>` : ''}
+                        </div>
+                    `;
+                } else {
+                    contentHtml = `<span class="whitespace-nowrap">${item.label}</span>`;
+                }
+
+                return `
+                    <div class="checkbox-item ${item.isDashed ? 'border-dashed border-gray-300' : ''}">
+                        <input type="checkbox" id="${item.id}" name="options" class="w-5 h-5 flex-shrink-0 text-blue-600 rounded border-gray-300 cursor-pointer">
+                        <label for="${item.id}" class="ml-3 text-gray-700 font-medium cursor-pointer flex-grow flex items-center">
+                            ${contentHtml}
+                        </label>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+        }
+
+        function handleSubmit() {
+            const selected = [];
+            CHECKBOX_OPTIONS.forEach(item => {
+                const checkbox = document.getElementById(item.id);
+                if (checkbox && checkbox.checked) {
+                    let value = item.label;
+                    if (item.type === 'dropdown') {
+                        const selectVal = document.getElementById(`select-${item.id}`).value;
+                        value = `${item.label} ${selectVal} ${item.suffix || ''}`;
+                    }
+                    selected.push(value);
+                }
+            });
+
+            if (selected.length > 0) {
+                alert('รายการที่เลือก:\n' + selected.join('\n'));
+            } else {
+                alert('กรุณาเลือกอย่างน้อย 1 รายการ');
+            }
+        }
+
+        window.onload = renderCheckboxes;
+    </script>
+</body>
+</html>
