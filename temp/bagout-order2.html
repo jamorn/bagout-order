@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bagout Order PP Plant</title>
+    <link rel="shortcut icon" href="#"><!-- fix favicon.ico -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+                .bagout-title {
+                    line-height: 1.2;
+                }
+                .toast-tmp {
+                    position: fixed;
+                    bottom: 32px;
+                    right: 32px;
+                    background: #d32f2f;
+                    color: white;
+                    padding: 14px 28px;
+                    border-radius: 1rem;
+                    font-weight: bold;
+                    font-size: 1rem;
+                    box-shadow: 0 4px 24px 0 rgba(211,47,47,0.15);
+                    z-index: 9999;
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                }
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f0f9f0; /* เปลี่ยนเป็นสีเขียวอ่อน */
+        }
+
+        /* รายการ Checkbox - เพิ่ม margin-bottom เป็น mb-8 */
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem; /* p-5 */
+            background: #ffffff;
+            border-radius: 1rem; /* rounded-2xl */
+            transition: background .15s ease, border-color .15s ease, transform .08s ease;
+            cursor: pointer;
+            border: 1px solid #d1e7dd; /* เปลี่ยนเป็นสีเขียวอ่อน */
+            margin-bottom: 1.75rem; /* similar to mb-8 (2rem) but slightly tighter */
+        }
+
+        .checkbox-item:hover { 
+            background: #d1f5e0; /* สีเขียวอ่อนกว่าเดิม เพื่อแยกจาก active */
+            border-color: #a5d6a7; /* เปลี่ยนเป็นสีเขียว */
+        }
+
+        .checkbox-item.active {
+            background: #f1f9f1 !important; /* เหมือน hover เดิม */
+            border-color: #a5d6a7 !important;
+            color: #17803c !important;
+            box-shadow: 0 2px 12px 0 rgba(23,128,60,0.08);
+        }
+        .checkbox-item.active .label-content {
+            color: #17803c !important;
+        }
+        
+
+        .label-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-weight: 600; /* font-semibold */
+            color: #1a472a;   /* เปลี่ยนเป็นสีเขียวเข้ม */
+            font-size: 1rem; /* text-base */
+            flex-wrap: wrap;
+        }
+
+        .dropdown-base {
+            background-color: #f1f9f1; /* เปลี่ยนเป็นสีเขียวอ่อน */
+            border: 1px solid #a5d6a7; /* เปลี่ยนเป็นสีเขียว */
+            color: #1a472a; /* เปลี่ยนเป็นสีเขียวเข้ม */
+            font-size: 0.875rem; /* text-sm */
+            border-radius: 0.5rem; /* rounded-lg */
+            outline: none;
+            cursor: pointer;
+            font-weight: 700; /* font-bold */
+            display: block;
+            padding: 0.375rem 0.75rem; /* p-1.5 px-3 */
+            min-width: 100px;
+            text-align: center;
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%232e7d32'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7' /%3E%3C/svg%3E"); /* เปลี่ยนเป็นสีเขียว */
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1.1em;
+            padding-right: 1.8rem;
+        }
+
+        /* ปรับ Row ของ Remarks ให้ "ยาว" ออกไปทางขวา - ใช้ w-full */
+        .remark-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: nowrap; /* keep input and delete button on same row */
+            width: 100%;
+            overflow: visible; /* allow floating label to be visible when moved upward */
+            margin-bottom: 1rem; /* slightly tighter spacing */
+            border: 1px solid #d1e7dd; /* เปลี่ยนเป็นสีเขียวอ่อน */
+            border-radius: 1rem;
+            background: #ffffff;
+            padding: 0.6rem 0.9rem; /* more horizontal padding */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+
+        /* ให้ remarksList ข้ามคอลัมน์กริดถ้าอยู่ใน container ที่ใช้ grid */
+        #remarksList { grid-column: 1 / -1; width: 100%; }
+
+        /* ตัวเลขลำดับ */
+        .remark-addon {
+            display: inline-flex;
+            align-items: center;
+            padding: 0 0.5rem;
+            font-weight: 700;
+            color: #1b5e20; /* เปลี่ยนเป็นสีเขียวเข้ม */
+            background: #e8f5e9; /* เปลี่ยนเป็นสีเขียวอ่อนมาก */
+            border-right: 1px solid #d1e7dd; /* เปลี่ยนเป็นสีเขียวอ่อน */
+            flex: 0 0 2.5rem; /* fixed width (reduced) */
+            min-width: 2.5rem;
+            justify-content: center;
+        }
+
+        /* ตัว Input - ปรับให้กว้างเต็มที่ (w-full) */
+        .remark-input {
+            display: block;
+            width: 100%;
+            padding: 1.1rem 0 0.45rem 0.6rem; /* top padding creates space for floating label */
+            background: transparent;
+            color: #1a472a; /* เปลี่ยนเป็นสีเขียวเข้ม */
+            font-size: 1rem;
+            font-weight: 500;
+            border: 0;
+            border-bottom: 2px solid #d1e7dd; /* เปลี่ยนเป็นสีเขียวอ่อน */
+            line-height: 1.25rem;
+            max-height: 50vh;
+            overflow: auto;
+            flex: 1 1 0; /* ให้ขยายแนวนอนเต็มที่ใน flex row */
+            min-width: 0; /* ให้สามารถย่อตัวได้ใน flex container */
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        /* ปุ่มลบ */
+        .remark-delete-btn {
+            background: #ffffff;
+            border-left: 1px solid #d1e7dd; /* เปลี่ยนเป็นสีเขียวอ่อน */
+            padding: 0.25rem 0.5rem;
+            color: #9ca3af; /* gray-400 */
+            transition: color .15s ease, background .15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            align-self: center;
+            height: auto;
+            margin-left: 0.25rem;
+        }
+
+        .remark-delete-btn:hover {
+            color: #d32f2f; /* เปลี่ยนเป็นสีแดงเข้ม */
+            background: #ffebee; /* เปลี่ยนเป็นสีแดงอ่อนมาก */
+        }
+
+            .remark-delete-btn svg {
+                width: 1.25rem; height: 1.25rem;
+            }
+
+            /* Floating label styles */
+            .remark-input-wrapper { position: relative; z-index: 0; flex: 1 1 0; min-width: 0; }
+                .remark-input-wrapper { width: auto; }
+            .remark-label {
+                position: absolute;
+                left: 0.6rem; /* align with input text */
+                top: 0.6rem;
+                font-size: 0.95rem;
+                color: #2e7d32; /* เปลี่ยนเป็นสีเขียว */
+                pointer-events: none;
+                transition: transform .18s ease, font-size .18s ease, top .18s ease, color .18s ease;
+                transform-origin: left top;
+                background: #ffffff;
+                padding: 0 0.15rem;
+                z-index: 5;
+            }
+            .remark-input:focus + .remark-label,
+            .remark-input:not(:placeholder-shown) + .remark-label {
+                transform: translateY(-1.05rem) scale(0.85);
+                top: 0;
+                color: #1b5e20; /* เปลี่ยนเป็นสีเขียวเข้ม */
+                background: #ffffff;
+            }
+                .remark-input {
+                    width: 100%;
+                    box-sizing: border-box;
+                }
+                
+        /* Custom styling for radio and checkbox */
+        input[type="radio"] {
+            accent-color: #2e7d32; /* เปลี่ยนเป็นสีเขียว */
+        }
+        
+        input[type="checkbox"] {
+            accent-color: #2e7d32; /* เปลี่ยนเป็นสีเขียว */
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 sm:p-10">
+
+    <!-- ปรับ max-w-7xl เพื่อให้คอนเทนเนอร์กว้างขึ้น -->
+    <div class="bg-white p-8 sm:p-12 rounded-[2.5rem] shadow-[0_8px_40px_0_rgba(46,125,50,0.13),0_1.5px_8px_0_rgba(0,0,0,0.07)] max-w-7xl w-full border border-green-100 relative"> <!-- เปลี่ยนเป็นสีเขียว -->
+        <!-- Logo Decor Top-Left -->
+        <div class="absolute left-0 top-0 mt-6 ml-6 z-10">
+            <div class="p-4 bg-emerald-600 rounded-2xl shadow-xl shadow-emerald-200 flex items-center justify-center"> <!-- เปลี่ยนเป็นสีเขียว -->
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                </svg>
+            </div>
+        </div>
+        <!-- Custom Header Section -->
+        <div class="mb-10 border-b border-green-100 pb-8"> <!-- เปลี่ยนเป็นสีเขียว -->
+            <div class="flex justify-center">
+                <h1 class="bagout-title text-4xl font-extrabold text-center text-emerald-700 mb-8 tracking-widest px-8 py-4 bg-emerald-50 rounded-2xl shadow-sm border-b-4 border-emerald-400 inline-block">BAGOUT ORDER</h1> <!-- เปลี่ยนเป็นสีเขียว -->
+            </div>
+            <!-- Row 1: Date, Running No, PO -->
+            <div class="flex flex-col md:flex-row gap-6 mb-6 justify-center items-center">
+                <div class="flex flex-col items-start w-full md:w-auto">
+                    <label for="orderDate" class="font-bold text-gray-700 mb-1">Date/Time</label>
+                    <input id="orderDate" name="orderDate" type="datetime-local" class="border border-emerald-300 rounded-lg px-4 py-2 w-full min-w-[220px] focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500" title="Select date and time" /> <!-- เปลี่ยนเป็นสีเขียว -->
+                </div>
+                <div class="flex flex-col items-start w-full md:w-auto">
+                    <label for="orderNo" class="font-bold text-gray-700 mb-1">No.</label>
+                    <input id="orderNo" name="orderNo" type="text" maxlength="7" placeholder="001/26" class="border border-emerald-300 rounded-lg px-4 py-2 w-full min-w-[120px] focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500" title="Running number (e.g. 001/26)" oninput="handleOrderNoInput(this)" /> <!-- เปลี่ยนเป็นสีเขียว -->
+                </div>
+                <div class="flex flex-col items-start w-full md:w-auto relative">
+                    <label for="orderPO" class="font-bold text-gray-700 mb-1">PO</label>
+                    <div class="flex items-center gap-2">
+                        <input id="orderPO" name="orderPO" type="text" maxlength="9" pattern="[0-9]*" inputmode="numeric" class="border border-emerald-300 rounded-lg px-4 py-2 w-full min-w-[140px] focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 pr-10" oninput="handlePOInput(this)" placeholder="PO 9 digits" title="PO 9 digits, numbers only" /> <!-- เปลี่ยนเป็นสีเขียว -->
+                        <span id="poCount" class="text-xs text-emerald-600 font-bold">0/9</span> <!-- เปลี่ยนเป็นสีเขียว -->
+                        <span id="poCheck" class="ml-2 hidden"><svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg></span> <!-- เปลี่ยนเป็นสีเขียว -->
+                    </div>
+                </div>
+            </div>
+            <!-- Row 2: To Bagging Radio -->
+            <div class="flex flex-col md:flex-row gap-6 mb-6 items-center">
+                <label class="font-bold text-gray-700 mr-4">To Bagging:</label>
+                <div class="flex gap-6">
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="toBagging" value="PP1&2" class="accent-emerald-600 w-5 h-5" checked> <span>PP1&2</span></label> <!-- เปลี่ยนเป็นสีเขียว -->
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="toBagging" value="PP3" class="accent-emerald-600 w-5 h-5"> <span>PP3</span></label> <!-- เปลี่ยนเป็นสีเขียว -->
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="toBagging" value="PP4" class="accent-emerald-600 w-5 h-5"> <span>PP4</span></label> <!-- เปลี่ยนเป็นสีเขียว -->
+                </div>
+            </div>
+            <!-- Row 3: Table 6 Cols -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-emerald-200 rounded-xl overflow-hidden"> <!-- เปลี่ยนเป็นสีเขียว -->
+                    <thead class="bg-emerald-50"> <!-- เปลี่ยนเป็นสีเขียว -->
+                        <tr>
+                            <th class="px-4 py-2 text-left font-bold text-emerald-800">Bagging Silo</th> <!-- เปลี่ยนเป็นสีเขียว -->
+                            <th class="px-4 py-2 text-left font-bold text-emerald-800">Bagging Line</th> <!-- เปลี่ยนเป็นสีเขียว -->
+                            <th class="px-4 py-2 text-left font-bold text-emerald-800">Lot No.</th> <!-- เปลี่ยนเป็นสีเขียว -->
+                            <th class="px-4 py-2 text-left font-bold text-emerald-800">Type</th> <!-- เปลี่ยนเป็นสีเขียว -->
+                            <th class="px-4 py-2 text-left font-bold text-emerald-800">Quantity (MT)</th> <!-- เปลี่ยนเป็นสีเขียว -->
+                            <th class="px-4 py-2 text-left font-bold text-emerald-800">Remark</th> <!-- เปลี่ยนเป็นสีเขียว -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="px-4 py-2">
+                                <label for="bagSilo" class="sr-only">Bagging Silo</label>
+                                <input id="bagSilo" name="bagSilo" type="text" class="border border-emerald-300 rounded-lg px-2 py-1 w-full min-w-[80px] focus:ring-1 focus:ring-emerald-400 focus:border-emerald-500" value="21T061A" placeholder="Bagging Silo" title="Bagging Silo" /> <!-- เปลี่ยนเป็นสีเขียว -->
+                            </td>
+                            <td class="px-4 py-2">
+                                <label for="bagLine" class="sr-only">Bagging Line</label>
+                                <input id="bagLine" name="bagLine" type="text" class="border border-emerald-300 rounded-lg px-2 py-1 w-full min-w-[40px] focus:ring-1 focus:ring-emerald-400 focus:border-emerald-500" value="A" placeholder="Bagging Line" title="Bagging Line" /> <!-- เปลี่ยนเป็นสีเขียว -->
+                            </td>
+                            <td class="px-4 py-2">
+                                <label for="lotNo" class="sr-only">Lot No.</label>
+                                <input id="lotNo" name="lotNo" type="text" maxlength="10" pattern="[0-9]*" inputmode="numeric" class="border border-emerald-300 rounded-lg px-2 py-1 w-full min-w-[100px] focus:ring-1 focus:ring-emerald-400 focus:border-emerald-500" value="0260103025" placeholder="Lot No." title="Lot No. (numbers only)" /> <!-- เปลี่ยนเป็นสีเขียว -->
+                            </td>
+                            <td class="px-4 py-2">
+                                <label for="bagType" class="sr-only">Type</label>
+                                <input id="bagType" name="bagType" type="text" class="border border-emerald-300 rounded-lg px-2 py-1 w-full min-w-[60px] focus:ring-1 focus:ring-emerald-400 focus:border-emerald-500" value="2500H" placeholder="Type" title="Type" /> <!-- เปลี่ยนเป็นสีเขียว -->
+                            </td>
+                            <td class="px-4 py-2">
+                                <label for="quantity" class="sr-only">Quantity (MT)</label>
+                                <input id="quantity" name="quantity" type="number" min="0" step="0.05" class="border border-emerald-300 rounded-lg px-2 py-1 w-full min-w-[60px] focus:ring-1 focus:ring-emerald-400 focus:border-emerald-500" value="150" placeholder="Quantity (MT)" title="Quantity (MT)" oninput="handleQuantityInput(this)" /> <!-- เปลี่ยนเป็นสีเขียว -->
+                            </td>
+                            <td class="px-4 py-2">
+                                <label for="remarkType" class="sr-only">Remark</label>
+                                <select id="remarkType" name="remarkType" class="border border-emerald-300 rounded-lg px-2 py-1 w-full min-w-[100px] focus:ring-1 focus:ring-emerald-400 focus:border-emerald-500" title="Remark"> <!-- เปลี่ยนเป็นสีเขียว -->
+                                    <option value="PREMIUM" selected>PREMIUM</option>
+                                    <option value="SUB-STANDARD">SUB-STANDARD</option>
+                                    <option value="OGPH">OGPH</option>
+                                    <option value="OGPR">OGPR</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        
+        <form id="packagingForm" onsubmit="event.preventDefault();" class="w-full">
+            <!-- Section 1: Checkboxes -->
+            <div id="checkboxContainer" class="mb-6"></div>
+
+            <!-- Section 2: Remarks (Wide Style) -->
+            <div class="mt-8 pt-10 border-t-2 border-dashed border-emerald-100 w-full"> <!-- เปลี่ยนเป็นสีเขียว -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-bold text-emerald-900">หมายเหตุเพิ่มเติม (Remarks)</h3> <!-- เปลี่ยนเป็นสีเขียว -->
+                        <p class="text-sm text-emerald-600 mt-1">ระบุรายละเอียดเพิ่มเติมในช่องที่ขยายกว้างด้านล่าง</p> <!-- เปลี่ยนเป็นสีเขียว -->
+                    </div>
+                    <button type="button" onclick="addRemarkRow()" 
+                            class="flex-shrink-0 text-white bg-emerald-600 hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-300 font-bold rounded-xl text-base px-8 py-3.5 transition-all flex items-center shadow-lg shadow-emerald-100"> <!-- เปลี่ยนเป็นสีเขียว -->
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        เพิ่มแถวใหม่
+                    </button>
+                </div>
+                
+                <!-- ช่อง Remarks จะ "ยาว" ออกไปตามความกว้างของคอนเทนเนอร์ -->
+                <div id="remarksList" class="space-y-4 w-full">
+                    <!-- Dynamic rows will be added here -->
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mt-16 flex justify-center">
+                <button type="button" 
+                        onclick="handleSubmit()"
+                        class="w-full sm:w-1/2 text-white bg-gradient-to-br from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-extrabold rounded-2xl text-xl px-12 py-5 text-center shadow-2xl shadow-emerald-200 transition-all active:scale-[0.98]"> <!-- เปลี่ยนเป็นสีเขียว -->
+                    บันทึกข้อมูล
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // แบ่ง options เป็น 3 คอลัมน์ตามข้อกำหนด
+        const CHECKBOX_COLS = [
+            [ // col1 (radio group)
+                { id: 'pkg-25', label: 'Package 25 kg', type: 'radio', radioGroup: 'pkg', defaultChecked: true },
+                { id: 'pkg-custom', label: 'Package', type: 'radio-dropdown', radioGroup: 'pkg', suffix: 'KG.', options: [750, 800, 900], defaultValue: 750 }
+            ],
+            [ // col2
+                { id: 'prod-lock', label: 'Product Lock', type: 'standard' }
+            ],
+            [ // col3 (ที่เหลือ)
+                { id: 'cover-plastic', label: 'Cover With Plastic Sheet/Film Hood', type: 'standard' },
+                { id: 'mt1-wood', label: '1MT/Pallet (Wood Pallet)', type: 'standard' },
+                { id: 'mt1-plastic', label: '1MT/Pallet (Plastic Pallet)', type: 'standard' },
+                { id: 'mt15-wood', label: '1.5MT/Pallet (Wood Pallet)', type: 'standard' },
+                { id: 'mt15-plastic', label: '1.5MT/Pallet (Plastic Pallet)', type: 'standard' },
+                { id: 'other', label: 'Other', type: 'standard' }
+            ]
+        ];
+
+        // --- Highlight checked radio/checkbox parent ---
+        function updateActiveCheckboxItems() {
+            // Highlight checked checkboxes
+            document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(input => {
+                if (input.checked) {
+                    input.closest('.checkbox-item').classList.add('active');
+                } else {
+                    input.closest('.checkbox-item').classList.remove('active');
+                }
+            });
+            // Highlight only the checked radio in each group
+            const radioGroups = {};
+            document.querySelectorAll('.checkbox-item input[type="radio"]').forEach(input => {
+                const name = input.name;
+                if (!radioGroups[name]) radioGroups[name] = [];
+                radioGroups[name].push(input);
+            });
+            Object.values(radioGroups).forEach(group => {
+                group.forEach(input => {
+                    if (input.checked) {
+                        input.closest('.checkbox-item').classList.add('active');
+                    } else {
+                        input.closest('.checkbox-item').classList.remove('active');
+                    }
+                });
+            });
+        }
+        // Listen for change on all radios/checkboxes
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('input[type="checkbox"], input[type="radio"]')) {
+                updateActiveCheckboxItems();
+            }
+        });
+
+        // Patch renderCheckboxes to always update highlight after render
+        const origRenderCheckboxes = renderCheckboxes;
+        renderCheckboxes = function() {
+            origRenderCheckboxes();
+            updateActiveCheckboxItems();
+        }
+
+        function renderCheckboxes() {
+            const container = document.getElementById('checkboxContainer');
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 w-full">
+                    ${CHECKBOX_COLS.map((col, colIdx) => `
+                        <div class="flex flex-col gap-y-4">
+                            ${col.map(item => {
+                                let content = `<span>${item.label}</span>`;
+                                if (item.type === 'dropdown') {
+                                    const optionsHtml = item.options.map(opt => `<option value="${opt}" ${opt === item.defaultValue ? 'selected' : ''}>${opt}</option>`).join('');
+                                    content = `<span class="font-bold">${item.label}</span> <select id="select-${item.id}" class="dropdown-base ml-2">${optionsHtml}</select> ${item.suffix ? `<span class="text-sm text-emerald-600 font-bold ml-1">${item.suffix}</span>` : ''}`; 
+                                } else if (item.type === 'radio') {
+                                    content = `<span class="font-bold">${item.label}</span>`;
+                                } else if (item.type === 'radio-dropdown') {
+                                    const optionsHtml = item.options.map(opt => `<option value="${opt}" ${opt === item.defaultValue ? 'selected' : ''}>${opt}</option>`).join('');
+                                    content = `<span class="font-bold">${item.label}</span> <select id="select-${item.id}" class="dropdown-base ml-2">${optionsHtml}</select> ${item.suffix ? `<span class="text-sm text-emerald-600 font-bold ml-1">${item.suffix}</span>` : ''}`; 
+                                }
+                                let inputHtml = '';
+                                if (item.type === 'radio' || item.type === 'radio-dropdown') {
+                                    const checkedAttr = item.defaultChecked ? 'checked' : '';
+                                    inputHtml = `<input type="radio" name="${item.radioGroup}" id="${item.id}" class="w-5 h-5 text-emerald-600 bg-emerald-50 border-emerald-300 focus:ring-emerald-500 focus:ring-2 cursor-pointer transition-transform active:scale-90" ${checkedAttr}>`; 
+                                } else {
+                                    const checkedAttr = item.defaultChecked ? 'checked' : '';
+                                    inputHtml = `<input type="checkbox" id="${item.id}" class="w-5 h-5 text-emerald-600 bg-emerald-50 border-emerald-300 rounded-lg focus:ring-emerald-500 focus:ring-2 cursor-pointer transition-transform active:scale-90" ${checkedAttr}>`; 
+                                }
+                                return `
+                                    <label for="${item.id}" class="flex items-center gap-3 px-4 py-3 bg-white rounded-2xl border border-emerald-200 shadow-sm hover:bg-emerald-50 transition cursor-pointer"> <!-- เปลี่ยนเป็นสีเขียว -->
+                                        ${inputHtml}
+                                        <span class="label-content">${content}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function updateRemarkIndices() {
+            const rows = document.querySelectorAll('.remark-row');
+            rows.forEach((row, index) => {
+                const indexBadge = row.querySelector('.remark-addon');
+                if (indexBadge) indexBadge.textContent = (index + 1).toString();
+            });
+        }
+
+        // (removed autosize) textareas will be adjustable vertically by user
+
+        function showToast(message) {
+                        let toast = document.createElement('div');
+                        toast.textContent = message;
+                        toast.className = 'toast-tmp';
+                        document.body.appendChild(toast);
+                        setTimeout(() => { toast.style.opacity = 1; }, 10);
+                        setTimeout(() => { toast.style.opacity = 0; setTimeout(() => toast.remove(), 400); }, 2200);
+        }
+
+        function addRemarkRow(val = '') {
+            const list = document.getElementById('remarksList');
+            // ตรวจสอบแถวสุดท้าย ถ้าว่างไม่ให้เพิ่มและแจ้งเตือน
+            const rows = list.querySelectorAll('.remark-row');
+            if (rows.length > 0) {
+                const lastInput = rows[rows.length - 1].querySelector('.remark-input');
+                if (lastInput && !lastInput.value.trim()) {
+                    showToast('กรุณากรอกหมายเหตุในแถวก่อนหน้าก่อนเพิ่มใหม่');
+                    lastInput.focus();
+                    return;
+                }
+            }
+            const rowId = 'remark-' + Date.now();
+            const div = document.createElement('div');
+            div.className = 'remark-row';
+            div.id = rowId;
+            div.innerHTML = `
+                <span class="remark-addon">1</span>
+                <div class="remark-input-wrapper">
+                    <input type="text" class="remark-input" value="${val}" placeholder=" " />
+                    <label class="remark-label">พิมพ์หมายเหตุเพิ่มเติมที่นี่...</label>
+                </div>
+                <button type="button" onclick="removeRemarkRow('${rowId}')" class="remark-delete-btn" title="ลบ">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>`;
+            list.appendChild(div);
+            updateRemarkIndices();
+        }
+
+        function removeRemarkRow(id) {
+            const rows = document.querySelectorAll('.remark-row');
+            if (rows.length > 1) { 
+                document.getElementById(id).remove();
+                updateRemarkIndices();
+            } else {
+                document.querySelector(`#${id} .remark-input`).value = '';
+            }
+        }
+
+        function handleSubmit() {
+            // รวม id ทุกคอลัมน์ตามลำดับ bit (ซ้ายไปขวา)
+            const bitOrder = [
+                ...CHECKBOX_COLS[0].map(item => item.id),
+                ...CHECKBOX_COLS[1].map(item => item.id),
+                ...CHECKBOX_COLS[2].map(item => item.id)
+            ];
+            // ตรวจสอบ checked/radio และสร้าง binary string
+            const pkgRadio = document.querySelector('input[name="pkg"]:checked');
+            const binaryArr = bitOrder.map(id => {
+                if (id === 'pkg-25' || id === 'pkg-custom') {
+                    return pkgRadio && pkgRadio.id === id ? '1' : '0';
+                } else {
+                    const cb = document.getElementById(id);
+                    return cb && cb.checked ? '1' : '0';
+                }
+            });
+            const binaryString = binaryArr.reverse().join(''); // reverse ให้ bit0 อยู่ขวาสุด
+            const decimalValue = parseInt(binaryString, 2);
+
+            // เก็บค่าหมายเหตุ
+            const remarks = Array.from(document.querySelectorAll('.remark-input')).map(input => input.value);
+
+            // เก็บค่าทั้งหมดใน json
+            const result = {
+                bitOrder,
+                binary: binaryString,
+                decimal: decimalValue,
+                remarks
+            };
+            console.log('Submit Result:', result);
+        }
+
+
+        function handleOrderNoInput(input) {
+            input.value = input.value.replace(/[^0-9\/]/g, '');
+        }
+
+        function handleQuantityInput(input) {
+            // Allow only numbers with up to 2 decimal places
+            let val = input.value;
+            // Remove invalid chars
+            val = val.replace(/[^0-9.]/g, '');
+            // Only one dot
+            const parts = val.split('.');
+            if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+            // Limit to 2 decimal places
+            if (parts[1]) val = parts[0] + '.' + parts[1].slice(0,2);
+            input.value = val;
+        }
+
+        window.onload = () => {
+            // Set default datetime-local to now
+            const dt = new Date();
+            const pad = n => n.toString().padStart(2, '0');
+            const local = dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate()) + 'T' + pad(dt.getHours()) + ':' + pad(dt.getMinutes());
+            const orderDate = document.getElementById('orderDate');
+            if (orderDate) orderDate.value = local;
+            renderCheckboxes();
+            addRemarkRow();
+            setTimeout(updateActiveCheckboxItems, 0);
+        };
+    </script>
+</body>
+</html>

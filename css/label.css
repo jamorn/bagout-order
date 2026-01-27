@@ -1,0 +1,106 @@
+/* label.css - extracted from label.html <style> */
+.vertical-pipe {
+    display: none;
+}
+@media (min-width: 768px) {
+    .vertical-pipe {
+        display: block;
+        width: 0.5rem;
+        margin-left: 1rem;
+        margin-right: 1rem;
+        background: #e5e7eb;
+        border-radius: 9999px;
+        height: auto;
+        min-height: 40px;
+    }
+}
+body {
+    font-family: 'Sarabun', sans-serif;
+    background-color: #f0f2f5;
+}
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #f9fafb;
+    border-radius: 1rem;
+    transition: background .15s, border-color .15s, box-shadow .08s;
+    cursor: pointer;
+    border: 1px solid transparent;
+    margin-bottom: 0.25rem;
+}
+.checkbox-item:hover {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+.checkbox-item.active {
+    background: #dbeafe !important;
+    border-color: #2563eb !important;
+}
+select {
+    border: 1px solid #d1d5db;
+    background: #fff;
+    outline: none;
+    padding: 0.1rem 0.5rem;
+    margin: 0 0.25rem;
+    color: #2563eb;
+    font-weight: bold;
+    border-radius: 0.5rem;
+    transition: border .15s, box-shadow .15s;
+    min-width: 80px;
+    box-shadow: 0 1px 2px rgba(37,99,235,0.04);
+}
+.toast-tmp {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    background: #ef4444;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 1rem;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 4px 24px 0 rgba(239,68,68,0.15);
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.remark-row .remark-addon {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 700;
+    color: #1e3a8a;
+    background: #eef2ff;
+    border-radius: 0.5rem;
+    min-width: 2.2rem;
+    justify-content: center;
+}
+.remark-input {
+    width: 100%;
+    padding: 0.5rem 0.6rem;
+    background: transparent;
+    color: #111827;
+    font-size: 1rem;
+    font-weight: 500;
+    border: 0;
+    border-bottom: 2px solid #e5e7eb;
+    outline: none;
+}
+.remark-delete-btn {
+    background: #fff;
+    border-left: 1px solid #e5e7eb;
+    padding: 0.25rem 0.5rem;
+    color: #9ca3af;
+    transition: color .15s, background .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    align-self: center;
+    height: auto;
+    margin-left: 0.25rem;
+}
+.remark-delete-btn:hover {
+    color: #ef4444;
+    background: #fff5f5;
+}
