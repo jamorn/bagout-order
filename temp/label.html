@@ -5,131 +5,425 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkbox Labels Example</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Sarabun', sans-serif;
-            background-color: #f0f2f5;
-        }
-        /* จัดการให้ Checkbox และเนื้อหาทั้งหมดอยู่ในแถวเดียวกันเสมอ */
-        .checkbox-item {
-            @apply flex items-center p-3 bg-gray-50 hover:bg-blue-50 rounded-xl transition-all cursor-pointer border border-transparent hover:border-blue-200;
-        }
-        /* ปรับแต่ง Dropdown ให้มีขอบ 1px และขนาดกะทัดรัด */
-        select {
-            @apply border border-gray-300 bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none px-2 py-0.5 mx-1 text-blue-700 font-bold rounded transition-all cursor-pointer shadow-sm;
-            min-width: 80px;
-        }
-    </style>
+    <link rel="stylesheet" href="../css/label.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="flex items-center justify-center min-h-screen p-0">
 
-    <div class="bg-white p-6 rounded-2xl shadow-xl max-w-lg w-full border border-gray-100">
-        <h2 class="text-xl font-bold mb-6 text-blue-900 border-b-2 border-blue-100 pb-3 flex items-center">
+        <div class="flex w-full min-h-[80vh] justify-center">
+            <!-- Main content left, fixed width -->
+            <div class="bg-white p-2 rounded-2xl shadow-xl max-w-5xl w-[900px] border border-gray-100">
+        <h2 class="text-2xl font-bold mb-2 text-blue-900 border-b-2 border-blue-100 pb-2 flex items-center">
             <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
             </svg>
-            รายละเอียดบรรจุภัณฑ์และการขนส่ง
+            BAGOUT ORDER
         </h2>
-        
         <form id="packagingForm" class="space-y-2">
-            <div id="checkboxContainer" class="space-y-2"></div>
-
-            <button type="button" 
-                    onclick="handleSubmit()"
-                    class="w-full mt-4 bg-blue-700 text-white py-3 rounded-xl font-bold hover:bg-blue-800 transition-all shadow-md active:scale-95 shadow-blue-100">
+                        <!-- Form Details Section (ref from forn1.html) -->
+                        <div class="mb-2">
+                            <div class="flex flex-col md:flex-row gap-6 mb-6 justify-center items-center">
+                                <div class="flex flex-col items-start w-full md:w-auto">
+                                    <label for="orderDate" class="font-bold text-gray-700 mb-1">Date/Time</label>
+                                    <input id="orderDate" name="orderDate" type="datetime-local" class="border border-gray-300 rounded-lg px-4 py-2 w-full min-w-[220px] focus:ring-2 focus:ring-blue-400" title="Select date and time" />
+                                </div>
+                                <div class="flex flex-col items-start w-full md:w-auto">
+                                    <label for="orderNo" class="font-bold text-gray-700 mb-1">No.</label>
+                                    <input id="orderNo" name="orderNo" type="text" maxlength="7" placeholder="001/26" class="border border-gray-300 rounded-lg px-4 py-2 w-full min-w-[120px] focus:ring-2 focus:ring-blue-400" title="Running number (e.g. 001/26)" oninput="handleOrderNoInput(this)" />
+                                </div>
+                                <div class="flex flex-col items-start w-full md:w-auto relative">
+                                    <label for="orderPO" class="font-bold text-gray-700 mb-1">PO</label>
+                                    <div class="flex items-center gap-2">
+                                        <input id="orderPO" name="orderPO" type="text" maxlength="9" pattern="[0-9]*" inputmode="numeric" class="border border-gray-300 rounded-lg px-4 py-2 w-full min-w-[140px] focus:ring-2 focus:ring-blue-400 pr-10" oninput="handlePOInput(this)" placeholder="PO 9 digits" title="PO 9 digits, numbers only" />
+                                        <span id="poCount" class="text-xs text-gray-500 font-bold">0/9</span>
+                                        <span id="poCheck" class="ml-2 hidden"><svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col md:flex-row gap-6 mb-6 items-center">
+                                <label class="font-bold text-gray-700 mr-4">To Bagging:</label>
+                                <div class="flex gap-6">
+                                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="toBagging" value="PP1&2" class="accent-blue-600 w-5 h-5" checked> <span>PP1&2</span></label>
+                                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="toBagging" value="PP3" class="accent-blue-600 w-5 h-5"> <span>PP3</span></label>
+                                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="toBagging" value="PP4" class="accent-blue-600 w-5 h-5"> <span>PP4</span></label>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto mb-8">
+                                <table class="min-w-full border border-gray-200 rounded-xl overflow-hidden">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left font-bold text-gray-700">Bagging Silo</th>
+                                            <th class="px-4 py-2 text-left font-bold text-gray-700">Bagging Line</th>
+                                            <th class="px-4 py-2 text-left font-bold text-gray-700">Lot No.</th>
+                                            <th class="px-4 py-2 text-left font-bold text-gray-700">Type</th>
+                                            <th class="px-4 py-2 text-left font-bold text-gray-700">Quantity (MT)</th>
+                                            <th class="px-4 py-2 text-left font-bold text-gray-700">Remark</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="px-4 py-2">
+                                                <label for="bagSilo" class="sr-only">Bagging Silo</label>
+                                                <select id="bagSilo" name="bagSilo" class="border border-gray-300 rounded-lg px-2 py-1 w-full min-w-[80px]" title="Bagging Silo">
+                                                    <option value="">-- Select Silo --</option>
+                                                </select>
+                                            </td>
+                                            <td class="px-4 py-2">
+                                                <label for="bagLine" class="sr-only">Bagging Line</label>
+                                                <select id="bagLine" name="bagLine" class="border border-gray-300 rounded-lg px-2 py-1 w-full min-w-[40px]" title="Bagging Line" disabled>
+                                                    <option value="">-- Select Line --</option>
+                                                </select>
+                                            </td>
+                                            <td class="px-4 py-2">
+                                                <div class="relative w-full min-w-[100px]">
+                                                    <input id="lotNo" name="lotNo" type="text" maxlength="10" pattern="[0-9]*" inputmode="numeric" class="border border-gray-300 rounded-lg px-2 py-1 w-full pr-12" value="" placeholder="Lot No." title="Lot No. (numbers only)" oninput="handleLotNoInput(this)" />
+                                                    <span id="lotNoCount" class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-500 font-bold pointer-events-none bg-white px-1">0/10</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-2">
+                                                <label for="bagType" class="sr-only">Type</label>
+                                                <input id="bagType" name="bagType" type="text" class="border border-gray-300 rounded-lg px-2 py-1 w-full min-w-[60px]" value="" placeholder="Type" title="Type" autocomplete="off" />
+                                            </td>
+                                            <td class="px-4 py-2">
+                                                <label for="quantity" class="sr-only">Quantity (MT)</label>
+                                                <input id="quantity" name="quantity" type="number" min="0" step="0.05" class="border border-gray-300 rounded-lg px-2 py-1 w-full min-w-[60px]" value="150" placeholder="Quantity (MT)" title="Quantity (MT)" oninput="handleQuantityInput(this)" />
+                                            </td>
+                                            <td class="px-4 py-2">
+                                                <label for="remarkType" class="sr-only">Remark</label>
+                                                <select id="remarkType" name="remarkType" class="border border-gray-300 rounded-lg px-2 py-1 w-full min-w-[100px]" title="Remark">
+                                                    <option value="PREMIUM" selected>PREMIUM</option>
+                                                    <option value="SUB-STANDARD">SUB-STANDARD</option>
+                                                    <option value="OGPH">OGPH</option>
+                                                    <option value="OGPR">OGPR</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                
+            <div class="flex flex-col md:flex-row gap-4 w-full">
+                <!-- Left: Checkbox group -->
+                <div class="flex-1 border-b border-gray-200 pb-1">
+                    <div id="checkboxGroup" class="flex flex-col gap-1"></div>
+                </div>
+                <!-- Right: Table and Remarks -->
+                <div class="flex-1 md:border-l md:pl-6 flex flex-col gap-4">
+                    
+                    <div>
+                        <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div class="flex-1">
+                                <h3 class="text-lg font-bold text-gray-900">หมายเหตุเพิ่มเติม (Remarks)</h3>
+                                <p class="text-xs text-gray-500 mt-1">ระบุรายละเอียดเพิ่มเติมในช่องด้านขวา</p>
+                            </div>
+                            <button type="button" class="add-remark-btn flex-shrink-0 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-bold rounded-xl text-sm px-6 py-2.5 transition-all flex items-center shadow-lg shadow-blue-100">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                เพิ่มแถวใหม่
+                            </button>
+                        </div>
+                        <div id="remarksList" class="space-y-3 w-full"></div>
+                    </div>
+                </div>
+                
+            </div>
+            <button type="button" class="submit-form-btn w-full mt-8 bg-blue-700 text-white py-3 rounded-xl font-bold hover:bg-blue-800 transition-all shadow-md active:scale-95 shadow-blue-100">
                 บันทึกรายการ
             </button>
         </form>
+            </div>
+            <!-- Right: Card for history BAGOUT ORDER -->
+            <div class="flex-1 ml-8">
+                <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-4 mb-4">
+                    <h2 class="text-2xl font-bold mb-2 text-blue-900 border-b-2 border-blue-100 pb-2 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                        BAGOUT ORDER History 
+                    </h2>
+                    <div id="right-table-container"></div>
+                </div>
+            </div>
+        </div>
+    
+    <!-- Autocomplete dropdown (fixed position to avoid table overflow) -->
+    <div id="bagTypeAutocomplete" class="fixed z-[100] bg-white border border-gray-300 rounded-lg shadow-xl hidden max-h-40 overflow-y-auto min-w-[100px]">
     </div>
 
-    <script>
-        const CHECKBOX_OPTIONS = [
-            { id: 'pkg-25', label: 'Package 25 kg', type: 'standard' },
-            { id: 'prod-lock', label: 'Product Lock', type: 'standard' },
-            { 
-                id: 'pkg-custom', 
-                label: 'Package', 
-                type: 'dropdown', 
-                suffix: 'KG.', 
-                options: [750, 800, 900], 
-                defaultValue: 750 
-            },
-            { id: 'cover-plastic', label: 'Cover With Plastic Sheet/Film Hood', type: 'standard' },
-            { id: 'mt1-wood', label: '1MT/Pallet (Wood Pallet)', type: 'standard' },
-            { id: 'mt1-plastic', label: '1MT/Pallet (Plastic Pallet)', type: 'standard' },
-            { id: 'mt15-wood', label: '1.5MT/Pallet (Wood Pallet)', type: 'standard' },
-            { id: 'mt15-plastic', label: '1.5MT/Pallet (Plastic Pallet)', type: 'standard' },
-            { 
-                id: 'other', 
-                label: 'Other', 
-                type: 'dropdown', 
-                options: ['WARP', 'อื่นๆ...'], 
-                defaultValue: 'WARP',
-                isDashed: true 
-            }
-        ];
-
-        function renderCheckboxes() {
-            const container = document.getElementById('checkboxContainer');
+    <script type="module">
+    import { renderCheckboxes, updateActiveCheckboxItems, getSelectedCheckboxRadioData } from '../js/checkboxGroup.js';
+    import { addRemarkRow, removeRemarkRow, updateRemarkIndices } from '../js/remark.js';
+    import { getFormDataFromStorage, saveFormDataToStorage, renderFormDataTable, editFormData, deleteFormData, pushFormDataFromForm } from '../js/formData.js';
+    import { showToast } from '../js/toast.js';
+    import { pad, generateOrderNo, handlePOInput, handleOrderNoInput, handleQuantityInput, handleLotNoInput } from '../js/utils.js';
+    import { initHistoryTable, addHistoryRecord, updateHistoryRecord, renderHistoryTable } from '../js/historyTable.js';
+    import siloData from '../data/siloData.js';
+    import gradeData from '../data/grade_pp.js';
+    
+    // Sort grade data by MATNR
+    const sortedGrades = gradeData.map(g => g.MATNR).sort();
+    
+    // Autocomplete for bagType
+    function setupBagTypeAutocomplete() {
+        const input = document.getElementById('bagType');
+        const autocompleteDiv = document.getElementById('bagTypeAutocomplete');
+        
+        console.log('setupBagTypeAutocomplete called');
+        console.log('sortedGrades length:', sortedGrades.length);
+        console.log('First 5 grades:', sortedGrades.slice(0, 5));
+        
+        input.addEventListener('input', (e) => {
+            const value = e.target.value.toUpperCase();
+            console.log('Input value:', value);
+            autocompleteDiv.innerHTML = '';
             
-            const html = CHECKBOX_OPTIONS.map(item => {
-                let contentHtml = '';
-                
-                if (item.type === 'dropdown') {
-                    const optionsHtml = item.options.map(opt => 
-                        `<option value="${opt}" ${opt === item.defaultValue ? 'selected' : ''}>${opt}</option>`
-                    ).join('');
-                    
-                    // จัดการให้ label และ select อยู่ใน flex เดียวกันเพื่อไม่ให้หลุดแถว
-                    contentHtml = `
-                        <div class="flex items-center">
-                            <span class="whitespace-nowrap">${item.label}</span>
-                            <select id="select-${item.id}" class="my-0 h-8">
-                                ${optionsHtml}
-                            </select>
-                            ${item.suffix ? `<span class="whitespace-nowrap">${item.suffix}</span>` : ''}
-                        </div>
-                    `;
-                } else {
-                    contentHtml = `<span class="whitespace-nowrap">${item.label}</span>`;
-                }
-
-                return `
-                    <div class="checkbox-item ${item.isDashed ? 'border-dashed border-gray-300' : ''}">
-                        <input type="checkbox" id="${item.id}" name="options" class="w-5 h-5 flex-shrink-0 text-blue-600 rounded border-gray-300 cursor-pointer">
-                        <label for="${item.id}" class="ml-3 text-gray-700 font-medium cursor-pointer flex-grow flex items-center">
-                            ${contentHtml}
-                        </label>
-                    </div>
-                `;
-            }).join('');
-
-            container.innerHTML = html;
-        }
-
-        function handleSubmit() {
-            const selected = [];
-            CHECKBOX_OPTIONS.forEach(item => {
-                const checkbox = document.getElementById(item.id);
-                if (checkbox && checkbox.checked) {
-                    let value = item.label;
-                    if (item.type === 'dropdown') {
-                        const selectVal = document.getElementById(`select-${item.id}`).value;
-                        value = `${item.label} ${selectVal} ${item.suffix || ''}`;
-                    }
-                    selected.push(value);
-                }
-            });
-
-            if (selected.length > 0) {
-                alert('รายการที่เลือก:\n' + selected.join('\n'));
-            } else {
-                alert('กรุณาเลือกอย่างน้อย 1 รายการ');
+            if (value.length === 0) {
+                autocompleteDiv.classList.add('hidden');
+                return;
             }
+            
+            // Filter and limit to 5 results
+            const matches = sortedGrades
+                .filter(grade => grade.toUpperCase().startsWith(value))
+                .slice(0, 5);
+            
+            console.log('Matches found:', matches);
+            
+            if (matches.length === 0) {
+                autocompleteDiv.classList.add('hidden');
+                return;
+            }
+            
+            // Position dropdown below input
+            const rect = input.getBoundingClientRect();
+            autocompleteDiv.style.top = (rect.bottom + window.scrollY) + 'px';
+            autocompleteDiv.style.left = rect.left + 'px';
+            autocompleteDiv.style.width = rect.width + 'px';
+            
+            // Render matches
+            matches.forEach(grade => {
+                const div = document.createElement('div');
+                div.className = 'px-3 py-2 hover:bg-blue-50 cursor-pointer text-sm font-mono text-gray-700';
+                div.textContent = grade;
+                div.addEventListener('click', () => {
+                    input.value = grade;
+                    autocompleteDiv.classList.add('hidden');
+                });
+                autocompleteDiv.appendChild(div);
+            });
+            
+            autocompleteDiv.classList.remove('hidden');
+            console.log('Autocomplete shown with', matches.length, 'items');
+        });
+        
+        // Hide on blur (with delay for click event)
+        input.addEventListener('blur', () => {
+            setTimeout(() => autocompleteDiv.classList.add('hidden'), 200);
+        });
+        
+        // Hide on focus if empty
+        input.addEventListener('focus', (e) => {
+            if (e.target.value.length === 0) {
+                autocompleteDiv.classList.add('hidden');
+            }
+        });
+    }
+    
+    // Populate Silo dropdown
+    function populateSiloDropdown() {
+        const siloSelect = document.getElementById('bagSilo');
+        const uniqueSilos = [...new Set(siloData.map(item => item.SiloName))].sort();
+        
+        siloSelect.innerHTML = '<option value="">-- Select Silo --</option>';
+        uniqueSilos.forEach(silo => {
+            const option = document.createElement('option');
+            option.value = silo;
+            option.textContent = silo;
+            siloSelect.appendChild(option);
+        });
+    }
+    
+    // Populate Line dropdown based on selected Silo
+    function populateLineDropdown(selectedSilo) {
+        const lineSelect = document.getElementById('bagLine');
+        
+        if (!selectedSilo) {
+            lineSelect.innerHTML = '<option value="">-- Select Line --</option>';
+            lineSelect.disabled = true;
+            return;
         }
+        
+        const lines = siloData
+            .filter(item => item.SiloName === selectedSilo)
+            .map(item => item.LineName);
+        
+        const uniqueLines = [...new Set(lines)].sort();
+        
+        lineSelect.innerHTML = '<option value="">-- Select Line --</option>';
+        uniqueLines.forEach(line => {
+            const option = document.createElement('option');
+            option.value = line;
+            option.textContent = line;
+            lineSelect.appendChild(option);
+        });
+        
+        lineSelect.disabled = false;
+        
+        // Auto-select if only one option
+        if (uniqueLines.length === 1) {
+            lineSelect.value = uniqueLines[0];
+        }
+    }
 
-        window.onload = renderCheckboxes;
+    // Edit mode tracking
+    let editingIndex = null;
+    
+    // Clear form function
+    function clearFormAfterSubmit() {
+        // Clear text inputs
+        document.getElementById('orderPO').value = '';
+        document.getElementById('lotNo').value = '';
+        document.getElementById('quantity').value = '';
+        
+        // Reset selects to default
+        document.getElementById('bagSilo').selectedIndex = 0;
+        document.getElementById('bagLine').selectedIndex = 0;
+        document.getElementById('bagLine').disabled = true;
+        document.getElementById('bagType').value = '';
+        document.getElementById('remarkType').selectedIndex = 0;
+        
+        // Uncheck all checkboxes
+        document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => cb.checked = false);
+        
+        // Reset package radio to default (pkg-25)
+        const pkg25 = document.getElementById('pkg-25');
+        if (pkg25) pkg25.checked = true;
+        const selectPkgCustom = document.getElementById('select-pkg-custom');
+        if (selectPkgCustom) selectPkgCustom.selectedIndex = 0;
+        
+        // Clear remarks and add one empty row
+        const remarksList = document.getElementById('remarksList');
+        if (remarksList) remarksList.innerHTML = '';
+        addRemarkRow();
+        
+        // Generate new order date and order no
+        const now = new Date();
+        const isoString = now.toISOString().slice(0, 16);
+        document.getElementById('orderDate').value = isoString;
+        document.getElementById('orderNo').value = generateOrderNo();
+        
+        // Update UI
+        updateActiveCheckboxItems();
+        document.getElementById('poCount').textContent = '0/9';
+        document.getElementById('poCheck').classList.add('hidden');
+        document.getElementById('lotNoCount').textContent = '0/10';
+    }
+
+    // Priority: 1. Render checkboxes and remarks, 2. Setup form, 3. Setup table, 4. Setup events, 5. Render history
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Populate silo/line dropdowns
+        populateSiloDropdown();
+        setupBagTypeAutocomplete();
+        
+        // Add event listener for silo change
+        document.getElementById('bagSilo').addEventListener('change', (e) => {
+            populateLineDropdown(e.target.value);
+        });
+        
+        // 2. Render checkboxes and remarks
+        renderCheckboxes();
+        addRemarkRow();
+        setTimeout(updateActiveCheckboxItems, 0);
+
+        // Expose functions to global scope for populateFormFromRow
+        window.addRemarkRowWithValue = addRemarkRow;
+        window.updateActiveCheckboxItems = updateActiveCheckboxItems;
+
+        // 2. Setup form default values
+        const dt = new Date();
+        const pad2 = n => n.toString().padStart(2, '0');
+        const local = dt.getFullYear() + '-' + pad2(dt.getMonth() + 1) + '-' + pad2(dt.getDate()) + 'T' + pad2(dt.getHours()) + ':' + pad2(dt.getMinutes());
+        const orderDate = document.getElementById('orderDate');
+        if (orderDate) orderDate.value = local;
+        const orderNoInput = document.getElementById('orderNo');
+        if (orderNoInput) orderNoInput.value = generateOrderNo();
+
+        // 3. Setup form data table
+        renderFormDataTable({
+            onEdit: editFormData,
+            onDelete: deleteFormData
+        });
+
+        // 4. Setup events
+        document.getElementById('orderPO').addEventListener('input', e => handlePOInput(e.target));
+        document.getElementById('orderNo').addEventListener('input', e => handleOrderNoInput(e.target));
+        document.getElementById('quantity').addEventListener('input', e => handleQuantityInput(e.target));
+        document.getElementById('lotNo').addEventListener('input', e => handleLotNoInput(e.target));
+        document.getElementById('remarksList').addEventListener('click', e => {
+            if (e.target.closest('.remark-delete-btn')) {
+                const btn = e.target.closest('.remark-delete-btn');
+                removeRemarkRow(btn.dataset.id);
+            }
+        });
+        document.getElementById('remarksList').addEventListener('input', updateRemarkIndices);
+        document.querySelector('.add-remark-btn').addEventListener('click', () => addRemarkRow());
+        const submitBtn = document.querySelector('.submit-form-btn');
+        submitBtn.addEventListener('click', () => {
+            // Get checkbox/radio data
+            const checkboxRadioData = getSelectedCheckboxRadioData();
+            
+            // Collect form data
+            const formData = {
+                orderDate: document.getElementById('orderDate').value,
+                orderNo: document.getElementById('orderNo').value,
+                orderPO: document.getElementById('orderPO').value,
+                bagSilo: document.getElementById('bagSilo').value,
+                bagLine: document.getElementById('bagLine').value,
+                lotNo: document.getElementById('lotNo').value,
+                bagType: document.getElementById('bagType').value,
+                quantity: document.getElementById('quantity').value,
+                remarkType: document.getElementById('remarkType').value
+            };
+            
+            if (editingIndex !== null) {
+                // Update existing record
+                updateHistoryRecord(editingIndex, formData, checkboxRadioData);
+                showToast(`แก้ไขสำเร็จ! Binary 8421: ${checkboxRadioData.binary8421} (${checkboxRadioData.binaryString})`);
+                editingIndex = null;
+                submitBtn.textContent = 'บันทึก';
+                submitBtn.classList.remove('bg-orange-600', 'hover:bg-orange-700');
+                submitBtn.classList.add('bg-blue-700', 'hover:bg-blue-800');
+            } else {
+                // Add new record
+                addHistoryRecord(formData, checkboxRadioData);
+                showToast(`บันทึกสำเร็จ! Binary 8421: ${checkboxRadioData.binary8421} (${checkboxRadioData.binaryString})`);
+            }
+            
+            renderHistoryTable(1, 'right-table-container');
+            
+            // Clear form and generate new order no
+            clearFormAfterSubmit();
+        });
+        
+        // Expose edit mode function to global scope
+        window.setEditMode = function(idx) {
+            editingIndex = idx;
+            submitBtn.textContent = 'บันทึกการแก้ไข';
+            submitBtn.classList.remove('bg-blue-700', 'hover:bg-blue-800');
+            submitBtn.classList.add('bg-orange-600', 'hover:bg-orange-700');
+        };
+        // Checkbox/radio highlight
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('input[type="checkbox"], input[type="radio"]')) {
+                updateActiveCheckboxItems();
+            }
+        });
+
+        // 5. Render BAGOUT ORDER History Table
+        initHistoryTable();
+    });
     </script>
 </body>
 </html>

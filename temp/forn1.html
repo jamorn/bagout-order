@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Packaging & Shipping Details - Wide Input</title>
+    <title>Bagout Order PP Plant</title>
+    <link rel="shortcut icon" href="#"><!-- fix favicon.ico -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+                .header-title {
+                    line-height: 1.2;
+                }
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: #f9fafb;
+            background-color: #e0e7ef;
         }
 
         /* รายการ Checkbox - เพิ่ม margin-bottom เป็น mb-8 */
@@ -25,20 +29,32 @@
             margin-bottom: 1.75rem; /* similar to mb-8 (2rem) but slightly tighter */
         }
         .checkbox-item:hover { background: #f8fafc; border-color: #bfdbfe; }
-        }
+        
 
         .label-content {
             display: flex;
             align-items: center;
-            gap: 1rem; 
-            @apply font-semibold text-gray-900 text-base flex-wrap;
+            gap: 1rem;
+            font-weight: 600; /* font-semibold */
+            color: #111827;   /* text-gray-900 */
+            font-size: 1rem; /* text-base */
+            flex-wrap: wrap;
         }
 
         .dropdown-base {
-            @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-1.5 px-3 outline-none cursor-pointer font-bold;
-            -webkit-appearance: none; -moz-appearance: none; appearance: none;
+            background-color: #f9fafb; /* bg-gray-50 */
+            border: 1px solid #d1d5db; /* border-gray-300 */
+            color: #111827; /* text-gray-900 */
+            font-size: 0.875rem; /* text-sm */
+            border-radius: 0.5rem; /* rounded-lg */
+            outline: none;
+            cursor: pointer;
+            font-weight: 700; /* font-bold */
+            display: block;
+            padding: 0.375rem 0.75rem; /* p-1.5 px-3 */
             min-width: 100px;
             text-align: center;
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7' /%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 0.5rem center;
@@ -157,23 +173,116 @@
 <body class="flex items-center justify-center min-h-screen p-4 sm:p-10">
 
     <!-- ปรับ max-w-7xl เพื่อให้คอนเทนเนอร์กว้างขึ้น -->
-    <div class="bg-white p-8 sm:p-12 rounded-[2.5rem] shadow-2xl max-w-7xl w-full border border-gray-200">
-        <!-- Header -->
-        <div class="flex items-center mb-10 border-b border-gray-100 pb-8">
-            <div class="p-4 bg-blue-600 rounded-2xl shadow-xl shadow-blue-200 mr-6">
+    <div class="bg-white p-8 sm:p-12 rounded-[2.5rem] shadow-[0_8px_40px_0_rgba(37,99,235,0.13),0_1.5px_8px_0_rgba(0,0,0,0.07)] max-w-7xl w-full border border-gray-100 relative">
+        <!-- Logo Decor Top-Left -->
+        <div class="absolute left-0 top-0 mt-6 ml-6 z-10">
+            <div class="p-4 bg-blue-600 rounded-2xl shadow-xl shadow-blue-200 flex items-center justify-center">
                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                 </svg>
             </div>
-            <div>
-                <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">รายละเอียดบรรจุภัณฑ์</h2>
-                <p class="text-base text-gray-500 mt-1">เลือกรายการและระบุหมายเหตุพิเศษสำหรับการขนส่ง</p>
+        </div>
+        <!-- Custom Header Section -->
+        <div class="mb-10 border-b border-gray-100 pb-8">
+            <div class="flex justify-center">
+                <h1 class="header-title text-4xl font-extrabold text-center text-blue-700 mb-8 tracking-widest px-8 py-4 bg-blue-50 rounded-2xl shadow-sm border-b-4 border-blue-400 inline-block">BAGOUT ORDER</h1>
+            </div>
+            <!-- Row 1: Date, Running No, PO -->
+            <div class="flex flex-col md:flex-row gap-6 mb-6 justify-center items-center">
+                <div class="flex flex-col items-start w-full md:w-auto">
+                    <label for="orderDate" class="font-bold text-gray-700 mb-1">Date/Time</label>
+                    <input id="orderDate" name="orderDate" type="datetime-local" class="border border-gray-300 rounded-lg px-4 py-2 w-full min-w-[220px] focus:ring-2 focus:ring-blue-400" title="Select date and time" />
+                </div>
+                <div class="flex flex-col items-start w-full md:w-auto">
+                    <label for="orderNo" class="font-bold text-gray-700 mb-1">No.</label>
+                    <input id="orderNo" name="orderNo" type="text" maxlength="7" placeholder="001/26" class="border border-gray-300 rounded-lg px-4 py-2 w-full min-w-[120px] focus:ring-2 focus:ring-blue-400" title="Running number (e.g. 001/26)" oninput="handleOrderNoInput(this)" />
+                </div>
+                <div class="flex flex-col items-start w-full md:w-auto relative">
+                    <label for="orderPO" class="font-bold text-gray-700 mb-1">PO</label>
+                    <div class="flex items-center gap-2">
+                        <input id="orderPO" name="orderPO" type="text" maxlength="9" pattern="[0-9]*" inputmode="numeric" class="border border-gray-300 rounded-lg px-4 py-2 w-full min-w-[140px] focus:ring-2 focus:ring-blue-400 pr-10" oninput="handlePOInput(this)" placeholder="PO 9 digits" title="PO 9 digits, numbers only" />
+                        <span id="poCount" class="text-xs text-gray-500 font-bold">0/9</span>
+                        <span id="poCheck" class="ml-2 hidden"><svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg></span>
+                    </div>
+                </div>
+            </div>
+            <!-- Row 2: To Bagging Radio -->
+            <div class="flex flex-col md:flex-row gap-6 mb-6 items-center">
+                <label class="font-bold text-gray-700 mr-4">To Bagging:</label>
+                <div class="flex gap-6">
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="toBagging" value="PP1&2" class="accent-blue-600 w-5 h-5" checked> <span>PP1&2</span></label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="toBagging" value="PP3" class="accent-blue-600 w-5 h-5"> <span>PP3</span></label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="toBagging" value="PP4" class="accent-blue-600 w-5 h-5"> <span>PP4</span></label>
+                </div>
+            </div>
+            <!-- Row 3: Table 6 Cols -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-200 rounded-xl overflow-hidden">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left font-bold text-gray-700">Bagging Silo</th>
+                            <th class="px-4 py-2 text-left font-bold text-gray-700">Bagging Line</th>
+                            <th class="px-4 py-2 text-left font-bold text-gray-700">Lot No.</th>
+                            <th class="px-4 py-2 text-left font-bold text-gray-700">Type</th>
+                            <th class="px-4 py-2 text-left font-bold text-gray-700">Quantity (MT)</th>
+                            <th class="px-4 py-2 text-left font-bold text-gray-700">Remark</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="px-4 py-2">
+                                <label for="bagSilo" class="sr-only">Bagging Silo</label>
+                                <input id="bagSilo" name="bagSilo" type="text" class="border border-gray-300 rounded-lg px-2 py-1 w-full min-w-[80px]" value="21T061A" placeholder="Bagging Silo" title="Bagging Silo" />
+                            </td>
+                            <td class="px-4 py-2">
+                                <label for="bagLine" class="sr-only">Bagging Line</label>
+                                <input id="bagLine" name="bagLine" type="text" class="border border-gray-300 rounded-lg px-2 py-1 w-full min-w-[40px]" value="A" placeholder="Bagging Line" title="Bagging Line" />
+                            </td>
+                            <td class="px-4 py-2">
+                                <label for="lotNo" class="sr-only">Lot No.</label>
+                                <input id="lotNo" name="lotNo" type="text" maxlength="10" pattern="[0-9]*" inputmode="numeric" class="border border-gray-300 rounded-lg px-2 py-1 w-full min-w-[100px]" value="0260103025" placeholder="Lot No." title="Lot No. (numbers only)" />
+                            </td>
+                            <td class="px-4 py-2">
+                                <label for="bagType" class="sr-only">Type</label>
+                                <input id="bagType" name="bagType" type="text" class="border border-gray-300 rounded-lg px-2 py-1 w-full min-w-[60px]" value="2500H" placeholder="Type" title="Type" />
+                            </td>
+                            <td class="px-4 py-2">
+                                <label for="quantity" class="sr-only">Quantity (MT)</label>
+                                <input id="quantity" name="quantity" type="number" min="0" step="0.05" class="border border-gray-300 rounded-lg px-2 py-1 w-full min-w-[60px]" value="150" placeholder="Quantity (MT)" title="Quantity (MT)" oninput="handleQuantityInput(this)" />
+                            </td>
+                            <td class="px-4 py-2">
+                                <label for="remarkType" class="sr-only">Remark</label>
+                                <select id="remarkType" name="remarkType" class="border border-gray-300 rounded-lg px-2 py-1 w-full min-w-[100px]" title="Remark">
+                                    <option value="PREMIUM" selected>PREMIUM</option>
+                                    <option value="SUB-STANDARD">SUB-STANDARD</option>
+                                    <option value="OGPH">OGPH</option>
+                                    <option value="OGPR">OGPR</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
+            <script>
+                // --- PO Input Counter & Validation ---
+                function handlePOInput(input) {
+                    // Only allow numbers
+                    input.value = input.value.replace(/[^0-9]/g, '');
+                    const count = input.value.length;
+                    document.getElementById('poCount').textContent = count + '/9';
+                    const check = document.getElementById('poCheck');
+                    if (count === 9) {
+                        check.classList.remove('hidden');
+                    } else {
+                        check.classList.add('hidden');
+                    }
+                }
+            </script>
         
         <form id="packagingForm" onsubmit="event.preventDefault();" class="w-full">
             <!-- Section 1: Checkboxes -->
-            <div id="checkboxContainer" class="grid grid-cols-1 md:grid-cols-2 gap-x-10 mb-6"></div>
+            <div id="checkboxContainer" class="mb-6"></div>
 
             <!-- Section 2: Remarks (Wide Style) -->
             <div class="mt-8 pt-10 border-t-2 border-dashed border-gray-100 w-full">
@@ -209,32 +318,61 @@
     </div>
 
     <script>
-        const CHECKBOX_OPTIONS = [
-            { id: 'pkg-25', label: 'Package 25 kg', type: 'standard' },
-            { id: 'prod-lock', label: 'Product Lock', type: 'standard' },
-            { id: 'pkg-custom', label: 'Package', type: 'dropdown', suffix: 'KG.', options: [750, 800, 900], defaultValue: 750 },
-            { id: 'cover-plastic', label: 'Cover With Plastic Sheet/Film Hood', type: 'standard' },
-            { id: 'mt1-wood', label: '1MT/Pallet (Wood Pallet)', type: 'standard' },
-            { id: 'mt1-plastic', label: '1MT/Pallet (Plastic Pallet)', type: 'standard' },
-            { id: 'mt15-wood', label: '1.5MT/Pallet (Wood Pallet)', type: 'standard' },
-            { id: 'mt15-plastic', label: '1.5MT/Pallet (Plastic Pallet)', type: 'standard' },
-            { id: 'other', label: 'Other', type: 'dropdown', options: ['WARP', 'อื่นๆ...'], defaultValue: 'WARP' }
+        // แบ่ง options เป็น 3 คอลัมน์ตามข้อกำหนด
+        const CHECKBOX_COLS = [
+            [ // col1 (radio group)
+                { id: 'pkg-25', label: 'Package 25 kg', type: 'radio', radioGroup: 'pkg', defaultChecked: true },
+                { id: 'pkg-custom', label: 'Package', type: 'radio-dropdown', radioGroup: 'pkg', suffix: 'KG.', options: [750, 800, 900], defaultValue: 750 }
+            ],
+            [ // col2
+                { id: 'prod-lock', label: 'Product Lock', type: 'standard' }
+            ],
+            [ // col3 (ที่เหลือ)
+                { id: 'cover-plastic', label: 'Cover With Plastic Sheet/Film Hood', type: 'standard' },
+                { id: 'mt1-wood', label: '1MT/Pallet (Wood Pallet)', type: 'standard' },
+                { id: 'mt1-plastic', label: '1MT/Pallet (Plastic Pallet)', type: 'standard' },
+                { id: 'mt15-wood', label: '1.5MT/Pallet (Wood Pallet)', type: 'standard' },
+                { id: 'mt15-plastic', label: '1.5MT/Pallet (Plastic Pallet)', type: 'standard' },
+                { id: 'other', label: 'Other', type: 'standard' }
+            ]
         ];
 
         function renderCheckboxes() {
             const container = document.getElementById('checkboxContainer');
-            container.innerHTML = CHECKBOX_OPTIONS.map(item => {
-                let content = `<span>${item.label}</span>`;
-                if (item.type === 'dropdown') {
-                    const optionsHtml = item.options.map(opt => `<option value="${opt}" ${opt === item.defaultValue ? 'selected' : ''}>${opt}</option>`).join('');
-                    content = `<span class="font-bold">${item.label}</span> <select id="select-${item.id}" class="dropdown-base">${optionsHtml}</select> ${item.suffix ? `<span class="text-sm text-gray-400 font-bold">${item.suffix}</span>` : ''}`;
-                }
-                return `
-                    <div class="checkbox-item group">
-                        <input type="checkbox" id="${item.id}" class="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded-lg focus:ring-blue-500 focus:ring-2 cursor-pointer transition-transform active:scale-90">
-                        <label for="${item.id}" class="label-content cursor-pointer select-none ml-2">${content}</label>
-                    </div>`;
-            }).join('');
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 w-full">
+                    ${CHECKBOX_COLS.map((col, colIdx) => `
+                        <div class="flex flex-col gap-y-4">
+                            ${col.map(item => {
+                                let content = `<span>${item.label}</span>`;
+                                if (item.type === 'dropdown') {
+                                    const optionsHtml = item.options.map(opt => `<option value="${opt}" ${opt === item.defaultValue ? 'selected' : ''}>${opt}</option>`).join('');
+                                    content = `<span class="font-bold">${item.label}</span> <select id="select-${item.id}" class="dropdown-base ml-2">${optionsHtml}</select> ${item.suffix ? `<span class="text-sm text-gray-400 font-bold ml-1">${item.suffix}</span>` : ''}`;
+                                } else if (item.type === 'radio') {
+                                    content = `<span class="font-bold">${item.label}</span>`;
+                                } else if (item.type === 'radio-dropdown') {
+                                    const optionsHtml = item.options.map(opt => `<option value="${opt}" ${opt === item.defaultValue ? 'selected' : ''}>${opt}</option>`).join('');
+                                    content = `<span class="font-bold">${item.label}</span> <select id="select-${item.id}" class="dropdown-base ml-2">${optionsHtml}</select> ${item.suffix ? `<span class="text-sm text-gray-400 font-bold ml-1">${item.suffix}</span>` : ''}`;
+                                }
+                                let inputHtml = '';
+                                if (item.type === 'radio' || item.type === 'radio-dropdown') {
+                                    const checkedAttr = item.defaultChecked ? 'checked' : '';
+                                    inputHtml = `<input type="radio" name="${item.radioGroup}" id="${item.id}" class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2 cursor-pointer transition-transform active:scale-90" ${checkedAttr}>`;
+                                } else {
+                                    const checkedAttr = item.defaultChecked ? 'checked' : '';
+                                    inputHtml = `<input type="checkbox" id="${item.id}" class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-lg focus:ring-blue-500 focus:ring-2 cursor-pointer transition-transform active:scale-90" ${checkedAttr}>`;
+                                }
+                                return `
+                                    <label for="${item.id}" class="flex items-center gap-3 px-4 py-3 bg-white rounded-2xl border border-gray-200 shadow-sm hover:bg-blue-50 transition cursor-pointer">
+                                        ${inputHtml}
+                                        <span class="label-content">${content}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
         }
 
         function updateRemarkIndices() {
@@ -247,8 +385,39 @@
 
         // (removed autosize) textareas will be adjustable vertically by user
 
+        function showToast(message) {
+              let toast = document.createElement('div');
+              toast.textContent = message;
+              toast.style.position = 'fixed';
+              toast.style.bottom = '32px';
+              toast.style.right = '32px';
+              toast.style.background = '#ef4444'; // red-500
+              toast.style.color = 'white';
+              toast.style.padding = '14px 28px';
+              toast.style.borderRadius = '1rem';
+              toast.style.fontWeight = 'bold';
+              toast.style.fontSize = '1rem';
+              toast.style.boxShadow = '0 4px 24px 0 rgba(239,68,68,0.15)'; // red shadow
+              toast.style.zIndex = 9999;
+              toast.style.opacity = 0;
+              toast.style.transition = 'opacity 0.3s';
+              document.body.appendChild(toast);
+              setTimeout(() => { toast.style.opacity = 1; }, 10);
+              setTimeout(() => { toast.style.opacity = 0; setTimeout(() => toast.remove(), 400); }, 2200);
+        }
+
         function addRemarkRow(val = '') {
             const list = document.getElementById('remarksList');
+            // ตรวจสอบแถวสุดท้าย ถ้าว่างไม่ให้เพิ่มและแจ้งเตือน
+            const rows = list.querySelectorAll('.remark-row');
+            if (rows.length > 0) {
+                const lastInput = rows[rows.length - 1].querySelector('.remark-input');
+                if (lastInput && !lastInput.value.trim()) {
+                    showToast('กรุณากรอกหมายเหตุในแถวก่อนหน้าก่อนเพิ่มใหม่');
+                    lastInput.focus();
+                    return;
+                }
+            }
             const rowId = 'remark-' + Date.now();
             const div = document.createElement('div');
             div.className = 'remark-row';
@@ -277,10 +446,66 @@
         }
 
         function handleSubmit() {
-            alert('✅ บันทึกข้อมูลเรียบร้อยแล้ว');
+            // รวม id ทุกคอลัมน์ตามลำดับ bit (ซ้ายไปขวา)
+            const bitOrder = [
+                ...CHECKBOX_COLS[0].map(item => item.id),
+                ...CHECKBOX_COLS[1].map(item => item.id),
+                ...CHECKBOX_COLS[2].map(item => item.id)
+            ];
+            // ตรวจสอบ checked/radio และสร้าง binary string
+            const pkgRadio = document.querySelector('input[name="pkg"]:checked');
+            const binaryArr = bitOrder.map(id => {
+                if (id === 'pkg-25' || id === 'pkg-custom') {
+                    return pkgRadio && pkgRadio.id === id ? '1' : '0';
+                } else {
+                    const cb = document.getElementById(id);
+                    return cb && cb.checked ? '1' : '0';
+                }
+            });
+            const binaryString = binaryArr.reverse().join(''); // reverse ให้ bit0 อยู่ขวาสุด
+            const decimalValue = parseInt(binaryString, 2);
+
+            // เก็บค่าหมายเหตุ
+            const remarks = Array.from(document.querySelectorAll('.remark-input')).map(input => input.value);
+
+            // เก็บค่าทั้งหมดใน json
+            const result = {
+                bitOrder,
+                binary: binaryString,
+                decimal: decimalValue,
+                remarks
+            };
+            console.log('Submit Result:', result);
         }
 
-        window.onload = () => { renderCheckboxes(); addRemarkRow(); };
+
+        function handleOrderNoInput(input) {
+            input.value = input.value.replace(/[^0-9\/]/g, '');
+        }
+
+        function handleQuantityInput(input) {
+            // Allow only numbers with up to 2 decimal places
+            let val = input.value;
+            // Remove invalid chars
+            val = val.replace(/[^0-9.]/g, '');
+            // Only one dot
+            const parts = val.split('.');
+            if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+            // Limit to 2 decimal places
+            if (parts[1]) val = parts[0] + '.' + parts[1].slice(0,2);
+            input.value = val;
+        }
+
+        window.onload = () => {
+            // Set default datetime-local to now
+            const dt = new Date();
+            const pad = n => n.toString().padStart(2, '0');
+            const local = dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate()) + 'T' + pad(dt.getHours()) + ':' + pad(dt.getMinutes());
+            const orderDate = document.getElementById('orderDate');
+            if (orderDate) orderDate.value = local;
+            renderCheckboxes();
+            addRemarkRow();
+        };
     </script>
 </body>
 </html>
