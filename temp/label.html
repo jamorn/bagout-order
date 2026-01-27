@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="../css/label.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
-<body class="flex items-center justify-center min-h-screen p-0">
+<body class="bg-gradient-to-br from-indigo-50 via-white to-cyan-50 min-h-screen p-0 flex items-center justify-center">
 
-        <div class="flex w-full min-h-[80vh] justify-center">
+        <div class="flex w-full min-h-[80vh] justify-center p-4">
             <!-- Main content left, fixed width -->
-            <div class="bg-white p-2 rounded-2xl shadow-xl max-w-5xl w-[900px] border border-gray-100">
-        <h2 class="text-2xl font-bold mb-2 text-blue-900 border-b-2 border-blue-100 pb-2 flex items-center">
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-white/90 backdrop-blur-sm p-4 rounded-3xl shadow-2xl max-w-5xl w-[900px] border border-white/20">
+        <h2 class="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 border-b-2 border-gradient-to-r pb-3 flex items-center">
+            <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
             </svg>
             BAGOUT ORDER
@@ -129,16 +129,21 @@
                 </div>
                 
             </div>
-            <button type="button" class="submit-form-btn w-full mt-8 bg-blue-700 text-white py-3 rounded-xl font-bold hover:bg-blue-800 transition-all shadow-md active:scale-95 shadow-blue-100">
-                บันทึกรายการ
+            <button type="button" class="submit-form-btn w-full mt-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 rounded-2xl font-bold transition-all shadow-xl shadow-blue-200 active:scale-95">
+                <div class="flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    บันทึกรายการ
+                </div>
             </button>
         </form>
             </div>
             <!-- Right: Card for history BAGOUT ORDER -->
             <div class="flex-1 ml-8">
-                <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-4 mb-4">
-                    <h2 class="text-2xl font-bold mb-2 text-blue-900 border-b-2 border-blue-100 pb-2 flex items-center">
-                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-6 mb-4">
+                    <h2 class="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 border-b-2 border-gradient-to-r pb-3 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
                         </svg>
                         BAGOUT ORDER History 
@@ -340,6 +345,7 @@
         // Expose functions to global scope for populateFormFromRow
         window.addRemarkRowWithValue = addRemarkRow;
         window.updateActiveCheckboxItems = updateActiveCheckboxItems;
+        window.populateLineDropdown = populateLineDropdown;
 
         // 2. Setup form default values
         const dt = new Date();

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OEE Dashboard - Violet Template</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Highcharts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/chart.css">
+    <link rel="stylesheet" href="css/template.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'purple': {
+                            800: '#6a11cb',
+                            900: '#5a0eb3'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        :root {
+            --bg: #111827;
+            --card: #1f2937;
+            --border: #374151;
+            --text: #f9fafb;
+            --text-muted: #9ca3af;
+            --accent: #8b5cf6;
+            --accent-hover: #7c3aed;
+        }
+        
+        body {
+            background: linear-gradient(to bottom right, #1f2937, #5a0eb3, #1f2937);
+            min-height: 100vh;
+        }
+        
+        /* Force chart containers to be visible */
+        .chart-container {
+            background-color: var(--card) !important;
+            border: 1px solid var(--border) !important;
+            min-height: 600px !important;
+            height: 600px !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            margin-bottom: 2rem !important;
+            padding: 2rem !important;
+            position: relative !important;
+            overflow: visible !important;
+            border-radius: 8px !important;
+        }
+        
+        /* Force charts to be visible and sized */
+        .chart,
+        [id^="oeeChart_"] {
+            width: 100% !important;
+            height: 500px !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+        }
+        
+        /* Highcharts specific overrides */
+        .highcharts-container {
+            width: 100% !important;
+            height: 500px !important;
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        .highcharts-root {
+            width: 100% !important;
+            height: 500px !important;
+        }
+        
+        /* Charts grid layout */
+        .charts-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 2rem !important;
+            width: 100% !important;
+            max-width: 1800px !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
+        }
+        
+        /* Machine menu */
+        .machine-menu {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 1rem !important;
+            justify-content: center !important;
+            padding: 1rem !important;
+            background-color: var(--card) !important;
+            border-radius: 0.5rem !important;
+            margin-bottom: 2rem !important;
+            position: sticky !important;
+            top: 80px !important;
+            z-index: 40 !important;
+        }
+        
+        /* No data message */
+        .no-data-message {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="text-white">
+    
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-purple-800 to-blue-600 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-chart-line text-yellow-400 text-2xl"></i>
+                    <h1 class="text-xl md:text-2xl font-bold">OEE Dashboard</h1>
+                    <span class="hidden sm:inline-block px-2 py-1 bg-white/20 rounded text-xs">Analytics</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <nav class="hidden md:flex items-center gap-6">
+                        <a href="index.html" class="hover:text-yellow-400 transition">
+                            <i class="fas fa-home mr-1"></i>หน้าหลัก
+                        </a>
+                        <a href="components.html" class="hover:text-yellow-400 transition">
+                            <i class="fas fa-cube mr-1"></i>Components
+                        </a>
+                    </nav>
+                    <button id="menuToggle" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition flex items-center gap-2">
+                        <i class="fas fa-bars"></i>
+                        <span class="hidden sm:inline">เมนู</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden bg-purple-900/95 backdrop-blur-lg border-b border-white/10">
+        <div class="container mx-auto px-4 py-4">
+            <nav class="flex flex-col gap-4">
+                <a href="index.html" class="hover:text-yellow-400 transition py-2 border-b border-white/10">
+                    <i class="fas fa-home mr-2"></i>หน้าหลัก
+                </a>
+                <a href="components.html" class="hover:text-yellow-400 transition py-2 border-b border-white/10">
+                    <i class="fas fa-cube mr-2"></i>Components
+                </a>
+                <a href="oee-chart.html" class="hover:text-yellow-400 transition py-2">
+                    <i class="fas fa-chart-line mr-2"></i>OEE Dashboard
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <h1><i class="fas fa-industry mr-3"></i>OEE Production Dashboard</h1>
+        <p class="text-sm mt-2 opacity-90">Overall Equipment Effectiveness Monitoring System</p>
+    </div>
+
+    <!-- Machine Menu -->
+    <div class="machine-menu"></div>
+
+    <!-- Main Content -->
+    <main class="container" style="background: transparent; max-width: 1800px; width: 100%; padding: 20px;">
+        <!-- Info Cards -->
+        <section class="mb-8" style="display: block; visibility: visible;">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-gradient-to-br from-green-600/20 to-teal-600/20 backdrop-blur-sm rounded-xl p-6 border border-green-500/30">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-300 text-sm mb-1">เครื่องจักรทั้งหมด</p>
+                            <p class="text-3xl font-bold text-green-400" id="totalMachines">9</p>
+                        </div>
+                        <div class="text-5xl text-green-400 opacity-50">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-blue-600/20 to-cyan-600/20 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-300 text-sm mb-1">OEE เฉลี่ย</p>
+                            <p class="text-3xl font-bold text-blue-400" id="avgOEE">92.5%</p>
+                        </div>
+                        <div class="text-5xl text-blue-400 opacity-50">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm rounded-xl p-6 border border-purple-500/30">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-300 text-sm mb-1">สถานะระบบ</p>
+                            <p class="text-3xl font-bold text-purple-400">
+                                <i class="fas fa-check-circle"></i> Online
+                            </p>
+                        </div>
+                        <div class="text-5xl text-purple-400 opacity-50">
+                            <i class="fas fa-server"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Test Chart (debug) -->
+        <div id="testChartContainer" style="margin-bottom:1rem;">
+            <h2 class="text-xl font-semibold mb-2" style="color: var(--text, #e5e7eb);">Test: Highcharts render check</h2>
+            <div id="testChart" style="width:100%; height:400px; background: rgba(255,255,255,0.02); border:1px dashed rgba(255,255,255,0.04);"></div>
+        </div>
+
+        <script>
+            // Inline test chart to verify Highcharts rendering and CSS visibility
+            (function(){
+                function renderTestChart(){
+                    if (typeof Highcharts === 'undefined') {
+                        console.warn('TestChart: Highcharts not loaded yet');
+                        return;
+                    }
+                    try{
+                        Highcharts.chart('testChart', {
+                            chart: { type: 'column', backgroundColor: 'transparent' },
+                            title: { text: 'Test Chart' },
+                            xAxis: { categories: ['A','B','C','D'] },
+                            series: [{ name: 'Series 1', data: [1,3,2,4] }]
+                        });
+                        console.log('✅ Test chart rendered');
+                    }catch(e){
+                        console.error('❌ Test chart failed', e);
+                    }
+                }
+                // Try immediately and also after a short delay
+                renderTestChart();
+                setTimeout(renderTestChart, 800);
+            })();
+        </script>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid" id="chartsGrid" style="display: flex !important; flex-direction: column !important; gap: 2rem !important; min-height: 1000px; background: rgba(255,0,0,0.08);">
+            <!-- Charts will be rendered here by JavaScript -->
+        </div>
+    </main>
+
+    <!-- Goto Top Button -->
+    <button id="gotoTopBtn" style="display: none;">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Footer -->
+    <footer class="bg-black/30 border-t border-white/10 mt-12 py-6">
+        <div class="container mx-auto px-4">
+            <div class="text-center text-gray-400">
+                <p class="mb-2">OEE Dashboard - Production Analytics System</p>
+                <p class="text-sm">Powered by Violet Template & Highcharts</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/template.js"></script>
+    
+    <!-- Theme Configuration -->
+    <script>
+        // Setup theme for chart compatibility
+        window.getChartTheme = function() {
+            return {
+                bg: '#111827',
+                card: '#1f2937',
+                border: '#374151',
+                text: '#f9fafb',
+                textMuted: '#9ca3af',
+                accent: '#8b5cf6',
+                accentHover: '#7c3aed',
+                isHighContrast: false,
+                chartColors: {
+                    oee: '#22c55e',
+                    target: '#ef4444',
+                    giveaway: '#3b82f6'
+                }
+            };
+        };
+    </script>
+    
+    <!-- Load OEE Data -->
+    <script src="js/data.js"></script>
+    
+    <!-- OEE Chart Module -->
+    <script type="module" src="js/oee-chart.js"></script>
+    
+    <!-- Initialize Charts -->
+    <script>
+        // Wait for all dependencies to load
+        function initCharts() {
+            console.log('🚀 Initializing charts...');
+            console.log('Highcharts available:', typeof Highcharts !== 'undefined');
+            console.log('oeeData available:', typeof window.oeeData !== 'undefined');
+            console.log('renderOEECharts available:', typeof window.renderOEECharts !== 'undefined');
+            
+            if (typeof window.oeeData === 'undefined') {
+                console.error('❌ oeeData not found');
+                document.getElementById('chartsGrid').innerHTML = '<div class="chart-container"><div class="no-data-message"><i class="fas fa-exclamation-triangle text-6xl mb-4 text-red-400"></i><p class="text-2xl">ไม่พบข้อมูล OEE</p><p class="text-sm text-gray-400 mt-2">กรุณาตรวจสอบไฟล์ data.js</p></div></div>';
+                return;
+            }
+            
+            if (typeof Highcharts === 'undefined') {
+                console.error('❌ Highcharts not loaded');
+                return;
+            }
+            
+            // Store in sessionStorage for oee-chart.js
+            sessionStorage.setItem('oeeData', JSON.stringify({
+                result: {
+                    data: window.oeeData
+                }
+            }));
+            
+            // Wait for renderOEECharts to be available
+            function tryRender(attempts = 0) {
+                if (typeof window.renderOEECharts === 'function') {
+                    console.log('✅ Rendering charts...');
+                    window.renderOEECharts();
+                    
+                    // Debug: Check if charts are visible after rendering
+                    setTimeout(() => {
+                        const containers = document.querySelectorAll('.chart-container');
+                        const charts = document.querySelectorAll('[id^="oeeChart_"]');
+                        console.log('📊 Containers found:', containers.length);
+                        console.log('📈 Charts found:', charts.length);
+                        
+                        // Force visibility
+                        containers.forEach((container, idx) => {
+                            console.log(`Container ${idx}:`, {
+                                display: window.getComputedStyle(container).display,
+                                visibility: window.getComputedStyle(container).visibility,
+                                height: container.offsetHeight,
+                                width: container.offsetWidth
+                            });
+                            
+                            // Force styles
+                            container.style.display = 'block';
+                            container.style.visibility = 'visible';
+                            container.style.opacity = '1';
+                            container.style.height = '600px';
+                            container.style.minHeight = '600px';
+                        });
+                        
+                        charts.forEach((chart, idx) => {
+                            console.log(`Chart ${idx}:`, {
+                                display: window.getComputedStyle(chart).display,
+                                height: chart.offsetHeight,
+                                width: chart.offsetWidth
+                            });
+                            chart.style.display = 'block';
+                            chart.style.height = '500px';
+                        });
+                        
+                        // Reflow Highcharts
+                        if (window.Highcharts && window.Highcharts.charts) {
+                            console.log('🔄 Reflowing charts...');
+                            window.Highcharts.charts.forEach(chart => {
+                                if (chart) {
+                                    chart.reflow();
+                                }
+                            });
+                        }
+                    }, 1000);
+                } else if (attempts < 50) {
+                    setTimeout(() => tryRender(attempts + 1), 100);
+                } else {
+                    console.error('❌ renderOEECharts function not found after waiting');
+                }
+            }
+            
+            tryRender();
+        }
+        
+        // Wait for DOM and dependencies
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(initCharts, 500);
+            });
+        } else {
+            setTimeout(initCharts, 500);
+        }
+    </script>
+</body>
+</html>
+
+<!-- Debug CSS + overlays inserted to help surface invisible charts -->
+<style>
+    /* Ensure charts grid and containers are on top and visible */
+    /* force charts above any page overlays */
+    #chartsGrid, #testChartContainer { position: relative; z-index: 200000 !important; }
+    .chart-container { position: relative !important; border: 3px solid rgba(255,255,255,0.12) !important; background: rgba(0,0,0,0.06) !important; min-height: 420px !important; height: auto !important; z-index: 200000 !important; }
+    .highcharts-root, .highcharts-container svg { display: block !important; visibility: visible !important; opacity: 1 !important; z-index: 200001 !important; }
+    .highcharts-series path, .highcharts-series rect { stroke: #ffffff !important; fill: rgba(255,255,255,0.06) !important; }
+    .highcharts-axis-labels, .highcharts-axis-line, .highcharts-grid-line, .highcharts-tick { stroke: rgba(255,255,255,0.25) !important; fill: rgba(255,255,255,0.9) !important; }
+</style>
+
+<script>
+    // Overlay markers for each chart container to verify visual stacking
+    (function(){
+        function markContainers(){
+            const containers = Array.from(document.querySelectorAll('.chart-container'))
+                .concat(Array.from(document.querySelectorAll('[id^="oeeChart_"]')));
+
+            containers.forEach((c, idx)=>{
+                try{
+                    if(!c) return;
+                    c.style.position = 'relative';
+                    c.style.minHeight = c.style.minHeight || '420px';
+
+                    const existing = c.querySelector('.__debug_overlay');
+                    if(existing) return;
+
+                    const box = document.createElement('div');
+                    box.className = '__debug_overlay';
+                    box.style.position = 'absolute';
+                    box.style.top = '8px';
+                    box.style.left = '8px';
+                    box.style.padding = '4px 8px';
+                    box.style.background = 'rgba(0,0,0,0.6)';
+                    box.style.color = '#fff';
+                    box.style.zIndex = '9999';
+                    box.style.pointerEvents = 'none';
+                    box.style.fontSize = '12px';
+                    box.textContent = `DEBUG overlay ${idx} (${c.id || c.className})`;
+                    box.style.background = 'rgba(220,20,60,0.95)';
+                    box.style.color = '#fff';
+                    c.appendChild(box);
+                }catch(e){ console.warn('markContainers error', e); }
+            });
+        }
+
+        // Run a couple times after load to catch charts rendered later
+        setTimeout(markContainers, 300);
+        setTimeout(markContainers, 1200);
+
+        // Also attempt to force some Highcharts visual updates
+        setTimeout(()=>{
+            if(window.Highcharts && Array.isArray(window.Highcharts.charts)){
+                window.Highcharts.charts.forEach((ch, i)=>{
+                    if(!ch) return;
+                    try{
+                        ch.reflow();
+                        ch.update({ chart: { backgroundColor: 'rgba(0,0,0,0)' }}, true, false);
+                    }catch(e){ console.warn('chart update error', e); }
+                });
+                console.log('Reflowing charts...');
+            }
+        }, 1500);
+    })();
+</script>
+
+<!-- Fixed banner to confirm debug overlay injection -->
+<div id="__charts_debug_banner" style="position:fixed;left:50%;transform:translateX(-50%);top:56px;z-index:300000;padding:6px 12px;background:#dc143c;color:white;font-weight:700;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.4);pointer-events:none;">Charts debug ON</div>

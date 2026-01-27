@@ -14,8 +14,19 @@ function populateFormFromRow(row) {
     }
     if (row.orderNo) document.getElementById('orderNo').value = row.orderNo;
     if (row.orderPO) document.getElementById('orderPO').value = row.orderPO;
-    if (row.bagSilo) document.getElementById('bagSilo').value = row.bagSilo;
-    if (row.bagLine) document.getElementById('bagLine').value = row.bagLine;
+    if (row.bagSilo) {
+        document.getElementById('bagSilo').value = row.bagSilo;
+        // Trigger line dropdown population after setting silo
+        if (window.populateLineDropdown) {
+            window.populateLineDropdown(row.bagSilo);
+        }
+    }
+    if (row.bagLine) {
+        // Set bagLine after silo dropdown is populated
+        setTimeout(() => {
+            document.getElementById('bagLine').value = row.bagLine;
+        }, 10);
+    }
     if (row.lotNo) document.getElementById('lotNo').value = row.lotNo;
     if (row.bagType) document.getElementById('bagType').value = row.bagType;
     if (row.quantity) document.getElementById('quantity').value = row.quantity;
@@ -165,45 +176,53 @@ function filterData(data, searchTerm) {
 export function renderHistoryTable(page = 1, containerId = 'right-table-container', searchTerm = currentSearchTerm) {
     currentSearchTerm = searchTerm;
     const allData = getHistoryData();
-    const data = filterData(allData, searchTerm);
+    
+    // Sort by Order No DESC (newest first)
+    const sortedData = [...allData].sort((a, b) => {
+        const orderNoA = a.orderNo || '';
+        const orderNoB = b.orderNo || '';
+        return orderNoB.localeCompare(orderNoA, undefined, { numeric: true });
+    });
+    
+    const data = filterData(sortedData, searchTerm);
     const total = data.length;
     const start = (page - 1) * pageSize;
     const rows = data.slice(start, start + pageSize);
     const container = document.getElementById(containerId);
     if (!container) return;
     
-    let html = `<div class='w-full mx-auto'>`;
+    let html = `<div class='w-full mx-auto history-table-container'>`;
     
     // Search bar
     html += `<div class='mb-4'>`;
     html += `<div class='relative'>`;
-    html += `<input type='text' id='history-search' value='${searchTerm}' placeholder='ค้นหา Order No, PO, Silo, Type...' class='w-full px-4 py-2 pl-10 pr-4 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all' />`;
-    html += `<svg class='absolute left-3 top-2.5 w-5 h-5 text-gray-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'></path></svg>`;
+    html += `<input type='text' id='history-search' value='${searchTerm}' placeholder='ค้นหา Order No, PO, Silo, Type...' class='w-full px-4 py-2 pl-10 pr-4 text-sm bg-white/10 border border-purple-500/30 rounded-lg text-white placeholder-purple-300 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all' />`;
+    html += `<svg class='absolute left-3 top-2.5 w-5 h-5 text-purple-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'></path></svg>`;
     html += `</div>`;
     if (searchTerm) {
-        html += `<p class='text-xs text-gray-500 mt-2'>พบ ${total} รายการจากทั้งหมด ${allData.length} รายการ</p>`;
+        html += `<p class='text-xs text-purple-300 mt-2'>พบ ${total} รายการจากทั้งหมด ${allData.length} รายการ</p>`;
     }
     html += `</div>`;
     
     // Table
-    html += `<div class='overflow-x-auto rounded-lg border border-gray-200 shadow-sm'>`;
-    html += `<table class='min-w-full divide-y divide-gray-200 bg-white'>`;
-    html += `<thead class='bg-gradient-to-r from-blue-50 to-indigo-50'>`;
+    html += `<div class='overflow-x-auto rounded-lg border border-purple-500/30 shadow-lg'>`;
+    html += `<table class='min-w-full divide-y divide-purple-500/20 bg-purple-900/20 backdrop-blur'>`;
+    html += `<thead class='bg-purple-700/30'>`;
     html += `<tr>`;
-    html += `<th class='px-3 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider w-10'></th>`;
-    html += `<th class='px-3 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider'>#</th>`;
-    html += `<th class='px-3 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider'>Order No</th>`;
-    html += `<th class='px-3 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider'>Date</th>`;
-    html += `<th class='px-3 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider'>PO</th>`;
-    html += `<th class='px-3 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider'>Silo</th>`;
-    html += `<th class='px-3 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider'>Type</th>`;
-    html += `<th class='px-3 py-3 text-right text-xs font-bold text-gray-700 uppercase tracking-wider'>Qty</th>`;
-    html += `<th class='px-3 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider'>Actions</th>`;
+    html += `<th class='px-3 py-3 text-center text-xs font-bold text-purple-200 uppercase tracking-wider w-10'></th>`;
+    html += `<th class='px-3 py-3 text-left text-xs font-bold text-purple-200 uppercase tracking-wider'>#</th>`;
+    html += `<th class='px-3 py-3 text-left text-xs font-bold text-purple-200 uppercase tracking-wider'>Order No</th>`;
+    html += `<th class='px-3 py-3 text-left text-xs font-bold text-purple-200 uppercase tracking-wider'>Date</th>`;
+    html += `<th class='px-3 py-3 text-left text-xs font-bold text-purple-200 uppercase tracking-wider'>PO</th>`;
+    html += `<th class='px-3 py-3 text-left text-xs font-bold text-purple-200 uppercase tracking-wider'>Silo</th>`;
+    html += `<th class='px-3 py-3 text-left text-xs font-bold text-purple-200 uppercase tracking-wider'>Type</th>`;
+    html += `<th class='px-3 py-3 text-right text-xs font-bold text-purple-200 uppercase tracking-wider'>Qty</th>`;
+    html += `<th class='px-3 py-3 text-center text-xs font-bold text-purple-200 uppercase tracking-wider'>Actions</th>`;
     html += `</tr></thead>`;
-    html += `<tbody class='divide-y divide-gray-200'>`;
+    html += `<tbody class='divide-y divide-purple-500/20'>`;
     
     if (rows.length === 0) {
-        html += `<tr><td colspan='9' class='px-3 py-8 text-center text-gray-500'>`;
+        html += `<tr><td colspan='9' class='px-3 py-8 text-center text-purple-300'>`;
         html += searchTerm ? 'ไม่พบข้อมูลที่ค้นหา' : 'ยังไม่มีข้อมูล';
         html += `</td></tr>`;
     } else {
@@ -212,39 +231,43 @@ export function renderHistoryTable(page = 1, containerId = 'right-table-containe
             const isExpanded = expandedRows.has(actualIdx);
             
             // Main row
-            html += `<tr class='hover:bg-blue-50 transition-colors border-b border-gray-100'>`;
+            html += `<tr class='hover:bg-purple-600/20 transition-colors border-b border-purple-500/10'>`;
             html += `<td class='px-3 py-3 text-center'>`;
-            html += `<button class='expand-toggle text-gray-500 hover:text-blue-600 transition-colors' data-idx='${actualIdx}'>`;
+            html += `<button class='expand-toggle text-purple-300 hover:text-purple-100 transition-colors' data-idx='${actualIdx}'>`;
             html += isExpanded 
                 ? `<svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'></path></svg>`
                 : `<svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 5l7 7-7 7'></path></svg>`;
             html += `</button></td>`;
-            html += `<td class='px-3 py-3 text-sm text-gray-600 text-center font-medium'>${start + i + 1}</td>`;
-            html += `<td class='px-3 py-3 text-sm text-blue-900 font-semibold'>${row.orderNo}</td>`;
-            html += `<td class='px-3 py-3 text-sm text-gray-600'>${row.orderDate}</td>`;
-            html += `<td class='px-3 py-3 text-sm text-gray-700 font-medium'>${row.orderPO}</td>`;
-            html += `<td class='px-3 py-3 text-sm text-gray-600'>${row.bagSilo}</td>`;
-            html += `<td class='px-3 py-3 text-sm text-gray-700'>${row.bagType}</td>`;
-            html += `<td class='px-3 py-3 text-sm text-gray-900 text-right font-semibold'>${row.quantity}</td>`;
+            html += `<td class='px-3 py-3 text-sm text-purple-200 text-center font-medium'>${start + i + 1}</td>`;
+            html += `<td class='px-3 py-3 text-sm text-purple-100 font-semibold'>${row.orderNo}</td>`;
+            html += `<td class='px-3 py-3 text-sm text-purple-200'>${row.orderDate}</td>`;
+            html += `<td class='px-3 py-3 text-sm text-purple-100 font-medium'>${row.orderPO}</td>`;
+            html += `<td class='px-3 py-3 text-sm text-purple-200'>${row.bagSilo}</td>`;
+            html += `<td class='px-3 py-3 text-sm text-purple-100'>${row.bagType}</td>`;
+            html += `<td class='px-3 py-3 text-sm text-white text-right font-semibold'>${row.quantity}</td>`;
             html += `<td class='px-3 py-3 text-sm text-center'>`;
-            html += `<button class='text-blue-600 hover:text-blue-800 font-semibold mr-3 transition-colors history-edit' data-idx='${actualIdx}' title='นำข้อมูลไปยังฟอร์ม'>แก้ไข</button>`;
-            html += `<button class='text-red-600 hover:text-red-800 font-semibold transition-colors history-delete' data-idx='${actualIdx}'>ลบ</button>`;
+            html += `<button class='text-blue-400 hover:text-blue-300 mr-3 transition-colors history-edit bg-transparent border-none p-1 rounded hover:bg-blue-500/20' data-idx='${actualIdx}' title='นำข้อมูลไปยังฟอร์ม'>`;
+            html += `<i class="fas fa-pencil-alt text-sm"></i>`;
+            html += `</button>`;
+            html += `<button class='text-red-400 hover:text-red-300 transition-colors history-delete bg-transparent border-none p-1 rounded hover:bg-red-500/20' data-idx='${actualIdx}' title='ลบรายการนี้'>`;
+            html += `<i class="fas fa-eraser text-sm"></i>`;
+            html += `</button>`;
             html += `</td>`;
             html += `</tr>`;
             
             // Detail subrow (expanded)
             if (isExpanded) {
-                html += `<tr class='bg-blue-50/50 border-b border-blue-100'>`;
+                html += `<tr class='bg-purple-800/30 border-b border-purple-500/20'>`;
                 html += `<td colspan='9' class='px-12 py-4'>`;
                 html += `<div class='grid grid-cols-2 gap-4 text-sm'>`;
-                html += `<div><span class='font-semibold text-gray-700'>Line:</span> <span class='text-gray-600'>${row.bagLine}</span></div>`;
-                html += `<div><span class='font-semibold text-gray-700'>Lot No:</span> <span class='text-gray-600'>${row.lotNo || '-'}</span></div>`;
-                html += `<div><span class='font-semibold text-gray-700'>Remark Type:</span> <span class='px-2 py-1 text-xs font-medium rounded-full ${row.remarkType === 'PREMIUM' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}'>${row.remarkType}</span></div>`;
-                html += `<div><span class='font-semibold text-gray-700'>Package:</span> <span class='text-gray-600'>${row.packageType === 'pkg-25' ? 'Package 25 kg' : `Package ${row.packageValue} KG`}</span></div>`;
-                html += `<div class='col-span-2'><span class='font-semibold text-gray-700'>Selected Options:</span> <span class='text-gray-600'>${row.selectedOptions || '-'}</span></div>`;
-                html += `<div><span class='font-semibold text-gray-700'>Binary 8421:</span> <span class='text-gray-600 font-mono'>${row.binary8421} (${row.binaryString})</span></div>`;
+                html += `<div><span class='font-semibold text-purple-300'>Line:</span> <span class='text-purple-200'>${row.bagLine}</span></div>`;
+                html += `<div><span class='font-semibold text-purple-300'>Lot No:</span> <span class='text-purple-200'>${row.lotNo || '-'}</span></div>`;
+                html += `<div><span class='font-semibold text-purple-300'>Remark Type:</span> <span class='px-2 py-1 text-xs font-medium rounded-full ${row.remarkType === 'PREMIUM' ? 'bg-green-500/20 text-green-300' : 'bg-yellow-500/20 text-yellow-300'}'>${row.remarkType}</span></div>`;
+                html += `<div><span class='font-semibold text-purple-300'>Package:</span> <span class='text-purple-200'>${row.packageType === 'pkg-25' ? 'Package 25 kg' : `Package ${row.packageValue} KG`}</span></div>`;
+                html += `<div class='col-span-2'><span class='font-semibold text-purple-300'>Selected Options:</span> <span class='text-purple-200'>${row.selectedOptions || '-'}</span></div>`;
+                html += `<div><span class='font-semibold text-purple-300'>Binary 8421:</span> <span class='text-purple-100 font-mono'>${row.binary8421} (${row.binaryString})</span></div>`;
                 if (row.remarks && row.remarks.length > 0) {
-                    html += `<div class='col-span-2'><span class='font-semibold text-gray-700'>Remarks:</span><ul class='mt-1 ml-4 list-disc text-gray-600'>`;
+                    html += `<div class='col-span-2'><span class='font-semibold text-purple-300'>Remarks:</span><ul class='mt-1 ml-4 list-disc text-purple-200'>`;
                     row.remarks.forEach(remark => {
                         html += `<li>${remark}</li>`;
                     });
@@ -261,11 +284,11 @@ export function renderHistoryTable(page = 1, containerId = 'right-table-containe
     // Pagination controls
     const totalPages = Math.ceil(total / pageSize);
     html += `<div class='flex justify-between items-center mt-4'>`;
-    html += `<button class='px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all history-prev' ${page === 1 ? 'disabled' : ''}>`;
+    html += `<button class='px-4 py-2 text-sm font-medium text-purple-200 bg-purple-800/30 border border-purple-500/30 rounded-lg hover:bg-purple-700/40 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all history-prev' ${page === 1 ? 'disabled' : ''}>`;
     html += `<svg class='w-4 h-4 inline mr-1' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 19l-7-7 7-7'></path></svg>`;
     html += `ก่อนหน้า</button>`;
-    html += `<span class='text-sm text-gray-700'>หน้า <span class='font-semibold text-blue-600'>${page}</span> / <span class='font-semibold'>${totalPages || 1}</span> <span class='text-gray-500'>(${total} รายการ)</span></span>`;
-    html += `<button class='px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all history-next' ${start + pageSize >= total ? 'disabled' : ''}>`;
+    html += `<span class='text-sm text-purple-200'>หน้า <span class='font-semibold text-purple-100'>${page}</span> / <span class='font-semibold text-purple-100'>${totalPages || 1}</span> <span class='text-purple-300'>(${total} รายการ)</span></span>`;
+    html += `<button class='px-4 py-2 text-sm font-medium text-purple-200 bg-purple-800/30 border border-purple-500/30 rounded-lg hover:bg-purple-700/40 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all history-next' ${start + pageSize >= total ? 'disabled' : ''}>`;
     html += `ถัดไป<svg class='w-4 h-4 inline ml-1' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 5l7 7-7 7'></path></svg>`;
     html += `</button>`;
     html += `</div></div>`;

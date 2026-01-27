@@ -5,33 +5,37 @@ export function getFormDataFromStorage() {
 export function saveFormDataToStorage(data) {
     localStorage.setItem('formDataTable', JSON.stringify(data));
 }
-export function renderFormDataTable({containerId = 'right-table-container', onEdit, onDelete} = {}) {
+export function renderFormDataTable(config = {}, containerId = 'right-table-container') {
+    // Support both old and new parameter formats
+    const { onEdit, onDelete } = typeof config === 'string' ? { onEdit: null, onDelete: null } : config;
+    const actualContainerId = typeof config === 'string' ? config : containerId;
+    
     const data = getFormDataFromStorage();
-    const container = document.getElementById(containerId);
+    const container = document.getElementById(actualContainerId);
     if (!container) return;
     if (data.length === 0) {
         container.innerHTML = `
-            <div class="w-full max-w-2xl mx-auto mt-8">
-                <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 flex flex-col items-center justify-center min-h-[180px]">
-                    <div class="text-gray-400 text-center">ยังไม่มีข้อมูลที่บันทึก</div>
+            <div class="w-full mx-auto mt-4">
+                <div class="bg-purple-900/20 backdrop-blur rounded-2xl border border-purple-500/30 p-8 flex flex-col items-center justify-center min-h-[180px]">
+                    <div class="text-purple-300 text-center">ยังไม่มีข้อมูลที่บันทึก</div>
                 </div>
             </div>
         `;
         return;
     }
-    let html = '<div class="w-full max-w-2xl mx-auto mt-8">';
-    html += '<table class="min-w-full border border-gray-200 rounded-xl overflow-hidden text-xs bg-white">';
-    html += '<thead class="bg-gray-50"><tr>';
-    html += '<th class="px-2 py-1">Field</th><th class="px-2 py-1">Value</th><th class="px-2 py-1">Actions</th>';
+    let html = '<div class="w-full mx-auto mt-4">';
+    html += '<table class="min-w-full border border-purple-500/30 rounded-xl overflow-hidden text-xs bg-purple-900/20 backdrop-blur">';
+    html += '<thead class="bg-purple-700/30"><tr>';
+    html += '<th class="px-3 py-2 text-purple-200">Field</th><th class="px-3 py-2 text-purple-200">Value</th><th class="px-3 py-2 text-purple-200">Actions</th>';
     html += '</tr></thead><tbody>';
     data.forEach((row, idx) => {
         Object.entries(row).forEach(([key, value], i) => {
-            html += '<tr>';
-            html += `<td class='px-2 py-1 font-bold text-blue-900'>${key}</td>`;
-            html += `<td class='px-2 py-1'><input type='text' value='${value}' data-idx='${idx}' data-key='${key}' class='w-full bg-transparent border-b border-gray-200 form-table-edit'/></td>`;
+            html += '<tr class="hover:bg-purple-600/20">';
+            html += `<td class='px-3 py-2 font-bold text-purple-300'>${key}</td>`;
+            html += `<td class='px-3 py-2'><input type='text' value='${value}' data-idx='${idx}' data-key='${key}' class='w-full bg-white/10 border border-purple-500/30 rounded px-2 py-1 text-white form-table-edit focus:ring-2 focus:ring-purple-400'/></td>`;
             if (i === 0) {
-                html += `<td class='px-2 py-1' rowspan='${Object.keys(row).length}'>`;
-                html += `<button data-idx='${idx}' class='text-red-600 font-bold form-table-delete'>ลบ</button>`;
+                html += `<td class='px-3 py-2' rowspan='${Object.keys(row).length}'>`;
+                html += `<button data-idx='${idx}' class='text-red-400 hover:text-red-300 font-bold form-table-delete px-3 py-1 bg-red-500/20 rounded hover:bg-red-500/30 transition'>ลบ</button>`;
                 html += '</td>';
             }
             html += '</tr>';

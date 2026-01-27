@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Components Showcase - Violet Template</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/template.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'purple': {
+                            800: '#6a11cb',
+                            900: '#5a0eb3'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 min-h-screen text-white">
+    
+    <!-- Simple Header -->
+    <header class="bg-gradient-to-r from-purple-800 to-blue-600 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-cube text-yellow-400 text-2xl"></i>
+                    <h1 class="text-xl md:text-2xl font-bold">Components Showcase</h1>
+                </div>
+                <a href="index.html" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition">
+                    <i class="fas fa-home mr-2"></i>กลับหน้าหลัก
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        
+        <!-- Buttons Section -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-mouse-pointer text-yellow-400"></i>
+                Buttons
+            </h2>
+            
+            <!-- Gradient Buttons -->
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 mb-6">
+                <h3 class="text-xl font-semibold mb-4">Gradient Buttons</h3>
+                <div class="flex flex-wrap gap-3">
+                    <button class="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg transition transform hover:scale-105">
+                        Purple to Blue
+                    </button>
+                    <button class="px-6 py-3 bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 rounded-lg transition transform hover:scale-105">
+                        Pink to Orange
+                    </button>
+                    <button class="px-6 py-3 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 rounded-lg transition transform hover:scale-105">
+                        Green to Teal
+                    </button>
+                    <button class="px-6 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 rounded-lg transition transform hover:scale-105">
+                        Red to Pink
+                    </button>
+                    <button class="px-6 py-3 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 rounded-lg transition transform hover:scale-105">
+                        Yellow to Orange
+                    </button>
+                    <button class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-lg transition transform hover:scale-105">
+                        Indigo to Purple
+                    </button>
+                </div>
+            </div>
+
+            <!-- Icon Buttons -->
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 mb-6">
+                <h3 class="text-xl font-semibold mb-4">Icon Buttons</h3>
+                <div class="flex flex-wrap gap-3">
+                    <button class="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg transition transform hover:scale-105 flex items-center gap-2">
+                        <i class="fas fa-save"></i>
+                        <span>บันทึก</span>
+                    </button>
+                    <button class="px-6 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 rounded-lg transition transform hover:scale-105 flex items-center gap-2">
+                        <i class="fas fa-trash"></i>
+                        <span>ลบ</span>
+                    </button>
+                    <button class="px-6 py-3 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 rounded-lg transition transform hover:scale-105 flex items-center gap-2">
+                        <i class="fas fa-download"></i>
+                        <span>ดาวน์โหลด</span>
+                    </button>
+                    <button class="px-6 py-3 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 rounded-lg transition transform hover:scale-105 flex items-center gap-2">
+                        <i class="fas fa-edit"></i>
+                        <span>แก้ไข</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Small Buttons -->
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+                <h3 class="text-xl font-semibold mb-4">Small Buttons</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg transition text-sm">
+                        <i class="fas fa-play mr-1"></i>Play
+                    </button>
+                    <button class="px-4 py-2 bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 rounded-lg transition text-sm">
+                        <i class="fas fa-pause mr-1"></i>Pause
+                    </button>
+                    <button class="px-4 py-2 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 rounded-lg transition text-sm">
+                        <i class="fas fa-stop mr-1"></i>Stop
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cards Section -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-layer-group text-blue-400"></i>
+                Cards
+            </h2>
+
+            <!-- Feature Cards -->
+            <div class="grid md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-purple-500/50 transition">
+                    <div class="text-4xl mb-4 text-purple-400">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Card Title</h3>
+                    <p class="text-gray-300">This is a feature card with icon and description.</p>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-blue-500/50 transition">
+                    <div class="text-4xl mb-4 text-blue-400">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Another Card</h3>
+                    <p class="text-gray-300">Hover to see the border color change effect.</p>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-pink-500/50 transition">
+                    <div class="text-4xl mb-4 text-pink-400">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Third Card</h3>
+                    <p class="text-gray-300">Beautiful gradient backgrounds and effects.</p>
+                </div>
+            </div>
+
+            <!-- Info Card with Badge -->
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 mb-6">
+                <div class="bg-purple-800/30 rounded-lg p-4 border border-purple-500/30">
+                    <div class="flex flex-wrap items-center justify-center gap-4">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-info-circle text-yellow-400"></i>
+                            <span class="text-gray-300">Label:</span>
+                            <span class="font-bold text-yellow-400">Value</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-chart-line text-blue-400"></i>
+                            <span class="text-gray-300">Status:</span>
+                            <span class="font-bold text-blue-400">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stat Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-gradient-to-br from-purple-600/20 to-blue-600/20 backdrop-blur-sm rounded-xl p-6 border border-purple-500/30 text-center">
+                    <i class="fas fa-users text-4xl text-purple-400 mb-2"></i>
+                    <div class="text-3xl font-bold mb-1">123</div>
+                    <div class="text-sm text-gray-400">Users</div>
+                </div>
+                <div class="bg-gradient-to-br from-blue-600/20 to-cyan-600/20 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30 text-center">
+                    <i class="fas fa-box text-4xl text-blue-400 mb-2"></i>
+                    <div class="text-3xl font-bold mb-1">456</div>
+                    <div class="text-sm text-gray-400">Products</div>
+                </div>
+                <div class="bg-gradient-to-br from-pink-600/20 to-orange-600/20 backdrop-blur-sm rounded-xl p-6 border border-pink-500/30 text-center">
+                    <i class="fas fa-shopping-cart text-4xl text-pink-400 mb-2"></i>
+                    <div class="text-3xl font-bold mb-1">789</div>
+                    <div class="text-sm text-gray-400">Orders</div>
+                </div>
+                <div class="bg-gradient-to-br from-green-600/20 to-teal-600/20 backdrop-blur-sm rounded-xl p-6 border border-green-500/30 text-center">
+                    <i class="fas fa-dollar-sign text-4xl text-green-400 mb-2"></i>
+                    <div class="text-3xl font-bold mb-1">$12K</div>
+                    <div class="text-sm text-gray-400">Revenue</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Forms Section -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-edit text-green-400"></i>
+                Form Elements
+            </h2>
+
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 mb-6">
+                <h3 class="text-xl font-semibold mb-4">Input Fields</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-300 mb-2">Text Input</label>
+                        <input type="text" placeholder="Enter text..." 
+                               class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-lg focus:border-purple-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 mb-2">Email Input</label>
+                        <input type="email" placeholder="email@example.com" 
+                               class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-lg focus:border-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 mb-2">Password Input</label>
+                        <input type="password" placeholder="••••••••" 
+                               class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-lg focus:border-pink-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 mb-2">Select Dropdown</label>
+                        <select class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-lg focus:border-green-500 focus:outline-none">
+                            <option>Option 1</option>
+                            <option>Option 2</option>
+                            <option>Option 3</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 mb-2">Textarea</label>
+                        <textarea rows="4" placeholder="Enter your message..." 
+                                  class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-lg focus:border-yellow-500 focus:outline-none"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sliders -->
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+                <h3 class="text-xl font-semibold mb-4">Range Sliders</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="flex items-center justify-between mb-2">
+                            <span class="text-gray-300 flex items-center gap-2">
+                                <i class="fas fa-volume-up text-purple-400"></i>
+                                Volume
+                            </span>
+                            <span class="font-bold text-purple-400">75%</span>
+                        </label>
+                        <input type="range" min="0" max="100" value="75" 
+                               class="w-full h-2 bg-purple-800 rounded-lg appearance-none cursor-pointer slider">
+                    </div>
+                    <div>
+                        <label class="flex items-center justify-between mb-2">
+                            <span class="text-gray-300 flex items-center gap-2">
+                                <i class="fas fa-sun text-blue-400"></i>
+                                Brightness
+                            </span>
+                            <span class="font-bold text-blue-400">50%</span>
+                        </label>
+                        <input type="range" min="0" max="100" value="50" 
+                               class="w-full h-2 bg-blue-800 rounded-lg appearance-none cursor-pointer slider">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Badges & Tags Section -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-tags text-pink-400"></i>
+                Badges & Tags
+            </h2>
+
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+                <h3 class="text-xl font-semibold mb-4">Badge Styles</h3>
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <span class="px-3 py-1 bg-yellow-500/20 border border-yellow-500/50 rounded-full text-yellow-300 text-sm">
+                        <i class="fas fa-star mr-1"></i>Featured
+                    </span>
+                    <span class="px-3 py-1 bg-blue-500/20 border border-blue-500/50 rounded-full text-blue-300 text-sm">
+                        <i class="fas fa-check mr-1"></i>Verified
+                    </span>
+                    <span class="px-3 py-1 bg-purple-500/20 border border-purple-500/50 rounded-full text-purple-300 text-sm">
+                        <i class="fas fa-crown mr-1"></i>Premium
+                    </span>
+                    <span class="px-3 py-1 bg-pink-500/20 border border-pink-500/50 rounded-full text-pink-300 text-sm">
+                        <i class="fas fa-fire mr-1"></i>Hot
+                    </span>
+                    <span class="px-3 py-1 bg-green-500/20 border border-green-500/50 rounded-full text-green-300 text-sm">
+                        <i class="fas fa-bolt mr-1"></i>New
+                    </span>
+                    <span class="px-3 py-1 bg-red-500/20 border border-red-500/50 rounded-full text-red-300 text-sm">
+                        <i class="fas fa-percent mr-1"></i>Sale
+                    </span>
+                </div>
+
+                <h3 class="text-xl font-semibold mb-4">Version Badges</h3>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-2 py-1 bg-white/20 rounded text-xs">v1.0</span>
+                    <span class="px-2 py-1 bg-green-600/30 border border-green-500/50 rounded text-xs">Beta</span>
+                    <span class="px-2 py-1 bg-yellow-600/30 border border-yellow-500/50 rounded text-xs">Alpha</span>
+                    <span class="px-2 py-1 bg-blue-600/30 border border-blue-500/50 rounded text-xs">Stable</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Icons Section -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-icons text-orange-400"></i>
+                Icon Examples
+            </h2>
+
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+                <div class="grid grid-cols-4 md:grid-cols-8 gap-4 text-center">
+                    <div>
+                        <i class="fas fa-home text-3xl text-purple-400 mb-2"></i>
+                        <div class="text-xs text-gray-400">Home</div>
+                    </div>
+                    <div>
+                        <i class="fas fa-user text-3xl text-blue-400 mb-2"></i>
+                        <div class="text-xs text-gray-400">User</div>
+                    </div>
+                    <div>
+                        <i class="fas fa-cog text-3xl text-pink-400 mb-2"></i>
+                        <div class="text-xs text-gray-400">Settings</div>
+                    </div>
+                    <div>
+                        <i class="fas fa-heart text-3xl text-red-400 mb-2"></i>
+                        <div class="text-xs text-gray-400">Heart</div>
+                    </div>
+                    <div>
+                        <i class="fas fa-star text-3xl text-yellow-400 mb-2"></i>
+                        <div class="text-xs text-gray-400">Star</div>
+                    </div>
+                    <div>
+                        <i class="fas fa-bell text-3xl text-orange-400 mb-2"></i>
+                        <div class="text-xs text-gray-400">Bell</div>
+                    </div>
+                    <div>
+                        <i class="fas fa-envelope text-3xl text-green-400 mb-2"></i>
+                        <div class="text-xs text-gray-400">Mail</div>
+                    </div>
+                    <div>
+                        <i class="fas fa-search text-3xl text-cyan-400 mb-2"></i>
+                        <div class="text-xs text-gray-400">Search</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lists Section -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-list text-teal-400"></i>
+                Lists
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-check-circle text-green-400"></i>
+                        Checklist
+                    </h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-green-400 mt-1"></i>
+                            <span>First item completed</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-green-400 mt-1"></i>
+                            <span>Second item done</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-green-400 mt-1"></i>
+                            <span>Third item finished</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-green-400 mt-1"></i>
+                            <span>All tasks complete</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-list-ul text-blue-400"></i>
+                        Feature List
+                    </h3>
+                    <ul class="space-y-2 text-gray-300 text-sm">
+                        <li class="flex items-center gap-2">
+                            <i class="fas fa-arrow-right text-purple-400"></i>
+                            <span>Modern and clean design</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i class="fas fa-arrow-right text-blue-400"></i>
+                            <span>Fully responsive layout</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i class="fas fa-arrow-right text-pink-400"></i>
+                            <span>Easy to customize</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i class="fas fa-arrow-right text-green-400"></i>
+                            <span>Well documented</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tables Section -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-table text-indigo-400"></i>
+                Tables
+            </h2>
+
+            <!-- Basic Table -->
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 mb-6">
+                <h3 class="text-xl font-semibold mb-4">Basic Table</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-purple-800/30 border-b border-purple-500/30">
+                            <tr>
+                                <th class="px-4 py-3 text-purple-300">#</th>
+                                <th class="px-4 py-3 text-purple-300">Name</th>
+                                <th class="px-4 py-3 text-purple-300">Email</th>
+                                <th class="px-4 py-3 text-purple-300">Role</th>
+                                <th class="px-4 py-3 text-purple-300">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-300">
+                            <tr class="border-b border-white/10 hover:bg-white/5 transition">
+                                <td class="px-4 py-3">1</td>
+                                <td class="px-4 py-3">John Doe</td>
+                                <td class="px-4 py-3">john@example.com</td>
+                                <td class="px-4 py-3">Admin</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 bg-green-500/20 border border-green-500/50 rounded text-green-300 text-xs">Active</span>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-white/10 hover:bg-white/5 transition">
+                                <td class="px-4 py-3">2</td>
+                                <td class="px-4 py-3">Jane Smith</td>
+                                <td class="px-4 py-3">jane@example.com</td>
+                                <td class="px-4 py-3">Editor</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 bg-green-500/20 border border-green-500/50 rounded text-green-300 text-xs">Active</span>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-white/10 hover:bg-white/5 transition">
+                                <td class="px-4 py-3">3</td>
+                                <td class="px-4 py-3">Bob Johnson</td>
+                                <td class="px-4 py-3">bob@example.com</td>
+                                <td class="px-4 py-3">Viewer</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 bg-yellow-500/20 border border-yellow-500/50 rounded text-yellow-300 text-xs">Pending</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-white/5 transition">
+                                <td class="px-4 py-3">4</td>
+                                <td class="px-4 py-3">Alice Williams</td>
+                                <td class="px-4 py-3">alice@example.com</td>
+                                <td class="px-4 py-3">User</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 bg-red-500/20 border border-red-500/50 rounded text-red-300 text-xs">Inactive</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Table with Actions -->
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 mb-6">
+                <h3 class="text-xl font-semibold mb-4">Table with Actions</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-blue-800/30 border-b border-blue-500/30">
+                            <tr>
+                                <th class="px-4 py-3 text-blue-300">Product</th>
+                                <th class="px-4 py-3 text-blue-300">Category</th>
+                                <th class="px-4 py-3 text-blue-300">Price</th>
+                                <th class="px-4 py-3 text-blue-300">Stock</th>
+                                <th class="px-4 py-3 text-blue-300 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-300">
+                            <tr class="border-b border-white/10 hover:bg-white/5 transition">
+                                <td class="px-4 py-3">Laptop Pro</td>
+                                <td class="px-4 py-3">Electronics</td>
+                                <td class="px-4 py-3 text-green-400 font-semibold">$1,299</td>
+                                <td class="px-4 py-3">45</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex justify-center gap-2">
+                                        <button class="px-3 py-1 bg-blue-600/30 hover:bg-blue-600/50 rounded text-xs transition">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="px-3 py-1 bg-yellow-600/30 hover:bg-yellow-600/50 rounded text-xs transition">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="px-3 py-1 bg-red-600/30 hover:bg-red-600/50 rounded text-xs transition">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-white/10 hover:bg-white/5 transition">
+                                <td class="px-4 py-3">Wireless Mouse</td>
+                                <td class="px-4 py-3">Accessories</td>
+                                <td class="px-4 py-3 text-green-400 font-semibold">$29</td>
+                                <td class="px-4 py-3">120</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex justify-center gap-2">
+                                        <button class="px-3 py-1 bg-blue-600/30 hover:bg-blue-600/50 rounded text-xs transition">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="px-3 py-1 bg-yellow-600/30 hover:bg-yellow-600/50 rounded text-xs transition">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="px-3 py-1 bg-red-600/30 hover:bg-red-600/50 rounded text-xs transition">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-white/5 transition">
+                                <td class="px-4 py-3">USB-C Cable</td>
+                                <td class="px-4 py-3">Accessories</td>
+                                <td class="px-4 py-3 text-green-400 font-semibold">$15</td>
+                                <td class="px-4 py-3">200</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex justify-center gap-2">
+                                        <button class="px-3 py-1 bg-blue-600/30 hover:bg-blue-600/50 rounded text-xs transition">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="px-3 py-1 bg-yellow-600/30 hover:bg-yellow-600/50 rounded text-xs transition">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="px-3 py-1 bg-red-600/30 hover:bg-red-600/50 rounded text-xs transition">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Striped Table -->
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+                <h3 class="text-xl font-semibold mb-4">Striped Table</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gradient-to-r from-purple-800/40 to-pink-800/40 border-b border-purple-500/30">
+                            <tr>
+                                <th class="px-4 py-3 text-purple-300">Date</th>
+                                <th class="px-4 py-3 text-purple-300">Transaction</th>
+                                <th class="px-4 py-3 text-purple-300">Amount</th>
+                                <th class="px-4 py-3 text-purple-300">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-300">
+                            <tr class="bg-white/5 border-b border-white/10">
+                                <td class="px-4 py-3">2026-01-03</td>
+                                <td class="px-4 py-3">Payment Received</td>
+                                <td class="px-4 py-3 text-green-400">+$500.00</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 bg-green-500/20 border border-green-500/50 rounded text-green-300 text-xs">
+                                        <i class="fas fa-check mr-1"></i>Success
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-white/10">
+                                <td class="px-4 py-3">2026-01-02</td>
+                                <td class="px-4 py-3">Subscription Fee</td>
+                                <td class="px-4 py-3 text-red-400">-$29.99</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 bg-blue-500/20 border border-blue-500/50 rounded text-blue-300 text-xs">
+                                        <i class="fas fa-clock mr-1"></i>Processing
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr class="bg-white/5 border-b border-white/10">
+                                <td class="px-4 py-3">2026-01-01</td>
+                                <td class="px-4 py-3">Refund Issued</td>
+                                <td class="px-4 py-3 text-yellow-400">+$150.00</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 bg-yellow-500/20 border border-yellow-500/50 rounded text-yellow-300 text-xs">
+                                        <i class="fas fa-exclamation mr-1"></i>Pending
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3">2025-12-31</td>
+                                <td class="px-4 py-3">Purchase</td>
+                                <td class="px-4 py-3 text-red-400">-$99.99</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 bg-green-500/20 border border-green-500/50 rounded text-green-300 text-xs">
+                                        <i class="fas fa-check mr-1"></i>Success
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Simple Footer -->
+    <footer class="bg-black/30 border-t border-white/10 mt-12 py-6">
+        <div class="container mx-auto px-4 text-center text-gray-400">
+            <p>Violet Template - Components Showcase</p>
+        </div>
+    </footer>
+
+    <script src="js/template.js"></script>
+</body>
+</html>

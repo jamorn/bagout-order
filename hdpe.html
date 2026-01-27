@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAGOUT ORDER System - HDPE Unit</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="violet-template/css/template.css">
+    <link rel="stylesheet" href="css/label.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'purple': {
+                            800: '#6a11cb',
+                            900: '#5a0eb3'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS for Purple Theme -->
+    <style>
+        /* Navigation Units Styling */
+        .nav-unit {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-unit.active {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .nav-unit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 min-h-screen text-white">
+    <!-- Header / Navbar -->
+    <header class="bg-gradient-to-r from-purple-800 to-blue-600 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-industry text-yellow-400 text-2xl"></i>
+                    <h1 class="text-xl md:text-2xl font-bold">BAGOUT ORDER</h1>
+                    <span class="hidden sm:inline-block px-2 py-1 bg-white/20 rounded text-xs">Production System</span>
+                </div>
+                
+                <!-- Navigation Units -->
+                <nav class="flex items-center gap-2">
+                    <a href="index.html" class="nav-unit px-4 py-2 rounded-lg text-white/80 font-medium transition hover:bg-white/20 hover:text-white">
+                        <i class="fas fa-cube mr-2"></i>PP
+                    </a>
+                    <a href="hdpe.html" class="nav-unit active px-4 py-2 rounded-lg bg-white/20 text-white font-semibold transition hover:bg-white/30">
+                        <i class="fas fa-oil-can mr-2"></i>HDPE
+                    </a>
+                    <a href="ppc.html" class="nav-unit px-4 py-2 rounded-lg text-white/80 font-medium transition hover:bg-white/20 hover:text-white">
+                        <i class="fas fa-layer-group mr-2"></i>PPC
+                    </a>
+                </nav>
+                
+                <div class="flex items-center gap-4">
+                    <span class="text-sm text-purple-200">Production Management System</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        
+        <!-- Coming Soon Section -->
+        <section class="text-center py-20">
+            <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-12 shadow-2xl border border-white/10 max-w-3xl mx-auto">
+                <div class="text-6xl mb-6 text-yellow-400">
+                    <i class="fas fa-oil-can"></i>
+                </div>
+                <h2 class="text-4xl font-bold mb-4 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                    HDPE UNIT
+                </h2>
+                <p class="text-xl text-gray-300 mb-8">
+                    ระบบจัดการใบสั่งผลิตสำหรับหน่วย HDPE
+                </p>
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                        <div class="text-3xl mb-3 text-orange-400">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <h3 class="font-bold mb-2">HDPE Materials</h3>
+                        <p class="text-gray-300 text-sm">จัดการวัตถุดิบ HDPE</p>
+                    </div>
+                    <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                        <div class="text-3xl mb-3 text-blue-400">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h3 class="font-bold mb-2">Special Process</h3>
+                        <p class="text-gray-300 text-sm">กระบวนการเฉพาะ HDPE</p>
+                    </div>
+                    <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                        <div class="text-3xl mb-3 text-green-400">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="font-bold mb-2">Quality Control</h3>
+                        <p class="text-gray-300 text-sm">ควบคุมคุณภาพ HDPE</p>
+                    </div>
+                </div>
+                <div class="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 mb-6">
+                    <div class="flex items-center justify-center gap-2 text-yellow-300">
+                        <i class="fas fa-tools"></i>
+                        <span class="font-semibold">ระบบอยู่ในระหว่างการพัฒนา</span>
+                    </div>
+                </div>
+                <p class="text-gray-400">
+                    ฟอร์มสำหรับหน่วย HDPE จะมีรูปแบบแตกต่างจาก PP Unit<br>
+                    แต่ระบบ History Table จะเหมือนกัน
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- History Table Section (Same format as PP) -->
+    <main class="container mx-auto px-4 pb-8">
+        <section id="historyTableSection" class="mb-8">
+            <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/10">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <i class="fas fa-history text-green-400"></i>
+                    HDPE ORDER HISTORY
+                </h2>
+                <div class="bg-purple-900/20 backdrop-blur rounded-xl border border-purple-500/30 p-8 text-center">
+                    <div class="text-purple-300 mb-4">
+                        <i class="fas fa-database text-4xl"></i>
+                    </div>
+                    <p class="text-purple-300">
+                        History Table สำหรับ HDPE Unit<br>
+                        <span class="text-sm text-purple-400">(จะใช้รูปแบบเดียวกับ PP Unit)</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>

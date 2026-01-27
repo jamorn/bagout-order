@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAGOUT ORDER System - Modern Production Management</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="violet-template/css/template.css">
+    <link rel="stylesheet" href="css/label.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'purple': {
+                            800: '#6a11cb',
+                            900: '#5a0eb3'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS for Purple Theme -->
+    <style>
+        /* Custom checkbox/radio styling for purple theme */
+        .checkbox-item {
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(168, 85, 247, 0.15);
+        }
+        
+        .checkbox-item.active {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(147, 51, 234, 0.2)) !important;
+            border: 1px solid #a855f7 !important;
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(168, 85, 247, 0.25);
+            color: #e879f9 !important;
+        }
+        
+        .checkbox-item.active label {
+            color: #e879f9 !important;
+        }
+        
+        .checkbox-item.active span {
+            color: #e879f9 !important;
+        }
+        
+        /* Custom scrollbar for autocomplete */
+        #bagTypeAutocomplete {
+            scrollbar-width: thin;
+            scrollbar-color: #a855f7 transparent;
+        }
+        
+        #bagTypeAutocomplete::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #bagTypeAutocomplete::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        #bagTypeAutocomplete::-webkit-scrollbar-thumb {
+            background: #a855f7;
+            border-radius: 3px;
+        }
+        
+        /* Enhance form inputs */
+        input:focus, select:focus {
+            ring-color: #a855f7;
+            border-color: #a855f7;
+        }
+        
+        /* Option hover effects */
+        option {
+            background: #1f2937;
+            color: white;
+        }
+        
+        /* History table purple theme styling */
+        .history-table-container table {
+            background: rgba(168, 85, 247, 0.05);
+        }
+        
+        .history-table-container thead {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(147, 51, 234, 0.15));
+        }
+        
+        .history-table-container th {
+            color: #e879f9 !important;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.3);
+        }
+        
+        .history-table-container td {
+            color: #e5e7eb;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.1);
+        }
+        
+        .history-table-container tr:hover {
+            background: rgba(168, 85, 247, 0.1) !important;
+        }
+        
+        .history-table-container input[type="text"] {
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: white;
+        }
+        
+        .history-table-container input[type="text"]:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+        }
+        
+        .history-table-container button {
+            transition: all 0.3s ease;
+        }
+        
+        /* Navigation Units Styling */
+        .nav-unit {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-unit.active {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .nav-unit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 min-h-screen text-white">
+    <!-- Header / Navbar -->
+    <header class="bg-gradient-to-r from-purple-800 to-blue-600 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-industry text-yellow-400 text-2xl"></i>
+                    <h1 class="text-xl md:text-2xl font-bold">BAGOUT ORDER</h1>
+                    <span class="hidden sm:inline-block px-2 py-1 bg-white/20 rounded text-xs">Production System</span>
+                </div>
+                
+                <!-- Navigation Units -->
+                <nav class="flex items-center gap-2">
+                    <a href="index.html" class="nav-unit active px-4 py-2 rounded-lg bg-white/20 text-white font-semibold transition hover:bg-white/30">
+                        <i class="fas fa-cube mr-2"></i>PP
+                    </a>
+                    <a href="hdpe.html" class="nav-unit px-4 py-2 rounded-lg text-white/80 font-medium transition hover:bg-white/20 hover:text-white">
+                        <i class="fas fa-oil-can mr-2"></i>HDPE
+                    </a>
+                    <a href="ppc.html" class="nav-unit px-4 py-2 rounded-lg text-white/80 font-medium transition hover:bg-white/20 hover:text-white">
+                        <i class="fas fa-layer-group mr-2"></i>PPC
+                    </a>
+                </nav>
+                
+                <div class="flex items-center gap-4">
+                    <span class="text-sm text-purple-200">Production Management System</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        
+        <!-- Form Section -->
+        <section id="formSection" class="mb-8">
+            <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/10">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <i class="fas fa-wpforms text-purple-400"></i>
+                    BAGOUT ORDER FORM
+                </h2>
+                
+                <form id="packagingForm" class="space-y-6">
+                    <!-- Form Header Details -->
+                    <div class="grid lg:grid-cols-3 gap-6 p-4 bg-white/5 rounded-xl border border-white/10">
+                        <div class="flex flex-col">
+                            <label for="orderDate" class="font-bold text-purple-300 mb-2 flex items-center gap-2">
+                                <i class="fas fa-calendar text-purple-400"></i>
+                                Date/Time
+                            </label>
+                            <input id="orderDate" name="orderDate" type="datetime-local" 
+                                   class="bg-white/10 border border-purple-500/50 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-purple-400 focus:bg-white/20" />
+                        </div>
+                        
+                        <div class="flex flex-col">
+                            <label for="orderNo" class="font-bold text-purple-300 mb-2 flex items-center gap-2">
+                                <i class="fas fa-hashtag text-purple-400"></i>
+                                Order No.
+                            </label>
+                            <input id="orderNo" name="orderNo" type="text" maxlength="7" placeholder="001/26"
+                                   class="bg-white/10 border border-purple-500/50 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-purple-400 focus:bg-white/20" 
+                                   oninput="handleOrderNoInput(this)" />
+                        </div>
+                        
+                        <div class="flex flex-col">
+                            <label for="orderPO" class="font-bold text-purple-300 mb-2 flex items-center gap-2">
+                                <i class="fas fa-file-alt text-purple-400"></i>
+                                PO Number
+                            </label>
+                            <div class="flex items-center gap-2">
+                                <input id="orderPO" name="orderPO" type="text" maxlength="9" pattern="[0-9]*" inputmode="numeric"
+                                       class="bg-white/10 border border-purple-500/50 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-purple-400 focus:bg-white/20 pr-10"
+                                       oninput="handlePOInput(this)" placeholder="PO 9 digits" />
+                                <span id="poCount" class="text-xs text-purple-300 font-bold">0/9</span>
+                                <span id="poCheck" class="ml-2 hidden">
+                                    <i class="fas fa-check-circle text-green-400"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- To Bagging Selection -->
+                    <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                        <label class="font-bold text-purple-300 mb-4 flex items-center gap-2 block">
+                            <i class="fas fa-route text-purple-400"></i>
+                            To Bagging:
+                        </label>
+                        <div class="flex gap-6">
+                            <label class="flex items-center gap-2 cursor-pointer text-white hover:text-purple-300 transition">
+                                <input type="radio" name="toBagging" value="PP1&2" class="accent-purple-500 w-5 h-5" checked> 
+                                <span>PP1&2</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer text-white hover:text-purple-300 transition">
+                                <input type="radio" name="toBagging" value="PP3" class="accent-purple-500 w-5 h-5"> 
+                                <span>PP3</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer text-white hover:text-purple-300 transition">
+                                <input type="radio" name="toBagging" value="PP4" class="accent-purple-500 w-5 h-5"> 
+                                <span>PP4</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Bagging Details Table -->
+                    <div class="overflow-x-auto bg-white/5 rounded-xl border border-white/10">
+                        <table class="w-full">
+                            <thead class="bg-white/10">
+                                <tr>
+                                    <th class="px-4 py-3 text-left font-bold text-purple-300">
+                                        <i class="fas fa-warehouse mr-1"></i>Bagging Silo
+                                    </th>
+                                    <th class="px-4 py-3 text-left font-bold text-purple-300">
+                                        <i class="fas fa-stream mr-1"></i>Bagging Line
+                                    </th>
+                                    <th class="px-4 py-3 text-left font-bold text-purple-300">
+                                        <i class="fas fa-tags mr-1"></i>Lot No.
+                                    </th>
+                                    <th class="px-4 py-3 text-left font-bold text-purple-300">
+                                        <i class="fas fa-cube mr-1"></i>Type
+                                    </th>
+                                    <th class="px-4 py-3 text-left font-bold text-purple-300">
+                                        <i class="fas fa-weight-hanging mr-1"></i>Quantity (MT)
+                                    </th>
+                                    <th class="px-4 py-3 text-left font-bold text-purple-300">
+                                        <i class="fas fa-comment mr-1"></i>Remark
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-4 py-3">
+                                        <select id="bagSilo" name="bagSilo" 
+                                               class="bg-white/10 border border-purple-500/50 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-400 w-full min-w-[120px]">
+                                            <option value="">-- Select Silo --</option>
+                                        </select>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <select id="bagLine" name="bagLine" 
+                                               class="bg-white/10 border border-purple-500/50 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-400 w-full min-w-[100px]" 
+                                               disabled>
+                                            <option value="">-- Select Line --</option>
+                                        </select>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="relative">
+                                            <input id="lotNo" name="lotNo" type="text" maxlength="10" pattern="[0-9]*" inputmode="numeric"
+                                                   class="bg-white/10 border border-purple-500/50 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-400 w-full min-w-[120px] pr-12"
+                                                   placeholder="Lot No." oninput="handleLotNoInput(this)" />
+                                            <span id="lotNoCount" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-purple-300 font-bold">0/10</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <input id="bagType" name="bagType" type="text"
+                                               class="bg-white/10 border border-purple-500/50 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-400 w-full min-w-[120px]"
+                                               placeholder="Type" autocomplete="off" />
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <input id="quantity" name="quantity" type="number" min="0" step="0.05" value="150"
+                                               class="bg-white/10 border border-purple-500/50 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-400 w-full min-w-[100px]"
+                                               placeholder="Quantity (MT)" oninput="handleQuantityInput(this)" />
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <select id="remarkType" name="remarkType"
+                                               class="bg-white/10 border border-purple-500/50 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-400 w-full min-w-[120px]">
+                                            <option value="PREMIUM" selected>PREMIUM</option>
+                                            <option value="SUB-STANDARD">SUB-STANDARD</option>
+                                            <option value="OGPH">OGPH</option>
+                                            <option value="OGPR">OGPR</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Checkbox Group and Remarks Section -->
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <!-- Left: Checkbox Group -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-bold text-purple-300 flex items-center gap-2">
+                                <i class="fas fa-check-square text-purple-400"></i>
+                                Package Options
+                            </h3>
+                            <div class="p-4 bg-purple-900/20 backdrop-blur rounded-xl border border-purple-500/30">
+                                <div id="checkboxGroup" class="space-y-3"></div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Remarks -->
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-lg font-bold text-purple-300 flex items-center gap-2">
+                                    <i class="fas fa-sticky-note text-purple-400"></i>
+                                    หมายเหตุเพิ่มเติม (Remarks)
+                                </h3>
+                                <button type="button" class="add-remark-btn bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg text-sm px-4 py-2 transition-all flex items-center gap-2">
+                                    <i class="fas fa-plus"></i>
+                                    เพิ่มแถว
+                                </button>
+                            </div>
+                            <div class="p-4 bg-purple-900/20 backdrop-blur rounded-xl border border-purple-500/30">
+                                <div id="remarksList" class="space-y-3 w-full"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="button" class="submit-form-btn w-full mt-8 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-4 rounded-2xl font-bold transition-all shadow-xl transform hover:scale-[1.02] active:scale-95">
+                        <div class="flex items-center justify-center gap-2">
+                            <i class="fas fa-save"></i>
+                            บันทึกรายการ
+                        </div>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- History Table Section (Always Visible) -->
+        <section id="historyTableSection" class="mb-8">
+            <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/10">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <i class="fas fa-history text-green-400"></i>
+                    BAGOUT ORDER HISTORY
+                </h2>
+                <div id="main-history-table"></div>
+            </div>
+        </section>
+
+
+    </main>
+
+    <!-- Autocomplete dropdown -->
+    <div id="bagTypeAutocomplete" class="fixed z-[100] bg-gray-800 border border-purple-500/50 rounded-lg shadow-xl hidden max-h-40 overflow-y-auto min-w-[100px]">
+    </div>
+
+    <!-- JavaScript -->
+    <script type="module">
+    import { renderCheckboxes, updateActiveCheckboxItems, getSelectedCheckboxRadioData } from './js/checkboxGroup.js';
+    import { addRemarkRow, removeRemarkRow, updateRemarkIndices } from './js/remark.js';
+    import { getFormDataFromStorage, saveFormDataToStorage, renderFormDataTable, editFormData, deleteFormData, pushFormDataFromForm } from './js/formData.js';
+    import { showToast } from './js/toast.js';
+    import { pad, generateOrderNo, handlePOInput, handleOrderNoInput, handleQuantityInput, handleLotNoInput } from './js/utils.js';
+    import { initHistoryTable, addHistoryRecord, updateHistoryRecord, renderHistoryTable } from './js/historyTable.js';
+    import siloData from './data/siloData.js';
+    import gradeData from './data/grade_pp.js';
+    
+    // Sort grade data by MATNR
+    const sortedGrades = gradeData.map(g => g.MATNR).sort();
+    
+    // Autocomplete for bagType
+    function setupBagTypeAutocomplete() {
+        const input = document.getElementById('bagType');
+        const autocompleteDiv = document.getElementById('bagTypeAutocomplete');
+        
+        console.log('setupBagTypeAutocomplete called');
+        console.log('sortedGrades length:', sortedGrades.length);
+        console.log('First 5 grades:', sortedGrades.slice(0, 5));
+        
+        input.addEventListener('input', (e) => {
+            const value = e.target.value.toUpperCase();
+            console.log('Input value:', value);
+            autocompleteDiv.innerHTML = '';
+            
+            if (value.length === 0) {
+                autocompleteDiv.classList.add('hidden');
+                return;
+            }
+            
+            // Filter and limit to 5 results
+            const matches = sortedGrades
+                .filter(grade => grade.toUpperCase().startsWith(value))
+                .slice(0, 5);
+            
+            console.log('Matches found:', matches);
+            
+            if (matches.length === 0) {
+                autocompleteDiv.classList.add('hidden');
+                return;
+            }
+            
+            // Position dropdown below input
+            const rect = input.getBoundingClientRect();
+            autocompleteDiv.style.top = (rect.bottom + window.scrollY) + 'px';
+            autocompleteDiv.style.left = rect.left + 'px';
+            autocompleteDiv.style.width = rect.width + 'px';
+            
+            // Render matches
+            matches.forEach(grade => {
+                const div = document.createElement('div');
+                div.className = 'px-3 py-2 hover:bg-purple-600 cursor-pointer text-sm font-mono text-gray-200';
+                div.textContent = grade;
+                div.addEventListener('click', () => {
+                    input.value = grade;
+                    autocompleteDiv.classList.add('hidden');
+                });
+                autocompleteDiv.appendChild(div);
+            });
+            
+            autocompleteDiv.classList.remove('hidden');
+            console.log('Autocomplete shown with', matches.length, 'items');
+        });
+        
+        // Hide on blur (with delay for click event)
+        input.addEventListener('blur', () => {
+            setTimeout(() => autocompleteDiv.classList.add('hidden'), 200);
+        });
+        
+        // Hide on focus if empty
+        input.addEventListener('focus', (e) => {
+            if (e.target.value.length === 0) {
+                autocompleteDiv.classList.add('hidden');
+            }
+        });
+    }
+    
+    // Populate Silo dropdown
+    function populateSiloDropdown() {
+        const siloSelect = document.getElementById('bagSilo');
+        const uniqueSilos = [...new Set(siloData.map(item => item.SiloName))].sort();
+        
+        siloSelect.innerHTML = '<option value="">-- Select Silo --</option>';
+        uniqueSilos.forEach(silo => {
+            const option = document.createElement('option');
+            option.value = silo;
+            option.textContent = silo;
+            siloSelect.appendChild(option);
+        });
+    }
+    
+    // Populate Line dropdown based on selected Silo
+    function populateLineDropdown(selectedSilo) {
+        const lineSelect = document.getElementById('bagLine');
+        
+        if (!selectedSilo) {
+            lineSelect.innerHTML = '<option value="">-- Select Line --</option>';
+            lineSelect.disabled = true;
+            return;
+        }
+        
+        const lines = siloData
+            .filter(item => item.SiloName === selectedSilo)
+            .map(item => item.LineName);
+        
+        const uniqueLines = [...new Set(lines)].sort();
+        
+        lineSelect.innerHTML = '<option value="">-- Select Line --</option>';
+        uniqueLines.forEach(line => {
+            const option = document.createElement('option');
+            option.value = line;
+            option.textContent = line;
+            lineSelect.appendChild(option);
+        });
+        
+        lineSelect.disabled = false;
+        
+        // Auto-select if only one option
+        if (uniqueLines.length === 1) {
+            lineSelect.value = uniqueLines[0];
+        }
+    }
+
+    // Edit mode tracking
+    let editingIndex = null;
+    
+    // Clear form function
+    function clearFormAfterSubmit() {
+        // Clear text inputs
+        document.getElementById('orderPO').value = '';
+        document.getElementById('lotNo').value = '';
+        document.getElementById('quantity').value = '150';
+        
+        // Reset selects to default
+        document.getElementById('bagSilo').selectedIndex = 0;
+        document.getElementById('bagLine').selectedIndex = 0;
+        document.getElementById('bagLine').disabled = true;
+        document.getElementById('bagType').value = '';
+        document.getElementById('remarkType').selectedIndex = 0;
+        
+        // Uncheck all checkboxes
+        document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => cb.checked = false);
+        
+        // Reset package radio to default (pkg-25)
+        const pkg25 = document.getElementById('pkg-25');
+        if (pkg25) pkg25.checked = true;
+        const selectPkgCustom = document.getElementById('select-pkg-custom');
+        if (selectPkgCustom) selectPkgCustom.selectedIndex = 0;
+        
+        // Clear remarks and add one empty row
+        const remarksList = document.getElementById('remarksList');
+        if (remarksList) remarksList.innerHTML = '';
+        addRemarkRow();
+        
+        // Generate new order date and order no
+        const now = new Date();
+        const isoString = now.toISOString().slice(0, 16);
+        document.getElementById('orderDate').value = isoString;
+        document.getElementById('orderNo').value = generateOrderNo();
+        
+        // Update UI
+        updateActiveCheckboxItems();
+        document.getElementById('poCount').textContent = '0/9';
+        document.getElementById('poCheck').classList.add('hidden');
+        document.getElementById('lotNoCount').textContent = '0/10';
+    }
+
+
+    // Priority: 1. Render checkboxes and remarks, 2. Setup form, 3. Setup table, 4. Setup events, 5. Render history
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Populate silo/line dropdowns
+        populateSiloDropdown();
+        setupBagTypeAutocomplete();
+        
+        // Add event listener for silo change
+        document.getElementById('bagSilo').addEventListener('change', (e) => {
+            populateLineDropdown(e.target.value);
+        });
+        
+        // 2. Render checkboxes and remarks
+        renderCheckboxes();
+        addRemarkRow();
+        setTimeout(updateActiveCheckboxItems, 0);
+
+        // Expose functions to global scope for populateFormFromRow
+        window.addRemarkRowWithValue = addRemarkRow;
+        window.updateActiveCheckboxItems = updateActiveCheckboxItems;
+        window.populateLineDropdown = populateLineDropdown;
+        window.handlePOInput = handlePOInput;
+        window.handleOrderNoInput = handleOrderNoInput;
+        window.handleQuantityInput = handleQuantityInput;
+        window.handleLotNoInput = handleLotNoInput;
+
+        // 2. Setup form default values
+        const dt = new Date();
+        const pad2 = n => n.toString().padStart(2, '0');
+        const local = dt.getFullYear() + '-' + pad2(dt.getMonth() + 1) + '-' + pad2(dt.getDate()) + 'T' + pad2(dt.getHours()) + ':' + pad2(dt.getMinutes());
+        const orderDate = document.getElementById('orderDate');
+        if (orderDate) orderDate.value = local;
+        const orderNoInput = document.getElementById('orderNo');
+        if (orderNoInput) orderNoInput.value = generateOrderNo();
+
+        // Add mock data if no existing data
+        const existingData = JSON.parse(localStorage.getItem('formDataTable') || '[]');
+        if (existingData.length === 0) {
+            const mockData = [
+                {
+                    orderDate: '2026-01-27T10:30',
+                    orderNo: '001/26',
+                    orderPO: '123456789',
+                    bagSilo: 'S1',
+                    bagLine: 'L1',
+                    lotNo: '2601001',
+                    bagType: 'PP25',
+                    quantity: '150',
+                    remarkType: 'PREMIUM',
+                    packageType: 'pkg-25',
+                    binary8421: 7
+                },
+                {
+                    orderDate: '2026-01-27T14:15',
+                    orderNo: '002/26',
+                    orderPO: '987654321',
+                    bagSilo: 'S2',
+                    bagLine: 'L2',
+                    lotNo: '2601002',
+                    bagType: 'PP30',
+                    quantity: '200',
+                    remarkType: 'SUB-STANDARD',
+                    packageType: 'pkg-custom',
+                    binary8421: 12
+                }
+            ];
+            localStorage.setItem('formDataTable', JSON.stringify(mockData));
+        }
+
+        // 3. Setup history table
+        renderHistoryTable(1, 'main-history-table');
+
+        // 4. Setup events
+        document.getElementById('orderPO').addEventListener('input', e => handlePOInput(e.target));
+        document.getElementById('orderNo').addEventListener('input', e => handleOrderNoInput(e.target));
+        document.getElementById('quantity').addEventListener('input', e => handleQuantityInput(e.target));
+        document.getElementById('lotNo').addEventListener('input', e => handleLotNoInput(e.target));
+        document.getElementById('remarksList').addEventListener('click', e => {
+            if (e.target.closest('.remark-delete-btn')) {
+                const btn = e.target.closest('.remark-delete-btn');
+                removeRemarkRow(btn.dataset.id);
+            }
+        });
+        document.getElementById('remarksList').addEventListener('input', updateRemarkIndices);
+        document.querySelector('.add-remark-btn').addEventListener('click', () => addRemarkRow());
+
+        
+        const submitBtn = document.querySelector('.submit-form-btn');
+        submitBtn.addEventListener('click', () => {
+            // Get checkbox/radio data
+            const checkboxRadioData = getSelectedCheckboxRadioData();
+            
+            // Collect form data
+            const formData = {
+                orderDate: document.getElementById('orderDate').value,
+                orderNo: document.getElementById('orderNo').value,
+                orderPO: document.getElementById('orderPO').value,
+                bagSilo: document.getElementById('bagSilo').value,
+                bagLine: document.getElementById('bagLine').value,
+                lotNo: document.getElementById('lotNo').value,
+                bagType: document.getElementById('bagType').value,
+                quantity: document.getElementById('quantity').value,
+                remarkType: document.getElementById('remarkType').value
+            };
+            
+            if (editingIndex !== null) {
+                // Update existing record
+                updateHistoryRecord(editingIndex, formData, checkboxRadioData);
+                showToast(`แก้ไขสำเร็จ! Binary 8421: ${checkboxRadioData.binary8421} (${checkboxRadioData.binaryString})`);
+                editingIndex = null;
+                submitBtn.innerHTML = '<div class="flex items-center justify-center gap-2"><i class="fas fa-save"></i>บันทึกรายการ</div>';
+                submitBtn.classList.remove('bg-orange-600', 'hover:bg-orange-700');
+                submitBtn.classList.add('bg-gradient-to-r', 'from-purple-600', 'to-blue-600', 'hover:from-purple-700', 'hover:to-blue-700');
+            } else {
+                // Add new record
+                addHistoryRecord(formData, checkboxRadioData);
+                showToast(`บันทึกสำเร็จ! Binary 8421: ${checkboxRadioData.binary8421} (${checkboxRadioData.binaryString})`);
+            }
+            
+            // Re-render history table
+            renderHistoryTable(1, 'main-history-table');
+            
+            // Clear form and generate new order no
+            clearFormAfterSubmit();
+        });
+        
+        // Expose edit mode function to global scope
+        window.setEditMode = function(idx) {
+            editingIndex = idx;
+            submitBtn.innerHTML = '<div class="flex items-center justify-center gap-2"><i class="fas fa-edit"></i>บันทึกการแก้ไข</div>';
+            submitBtn.classList.remove('bg-gradient-to-r', 'from-purple-600', 'to-blue-600', 'hover:from-purple-700', 'hover:to-blue-700');
+            submitBtn.classList.add('bg-orange-600', 'hover:bg-orange-700');
+        };
+        
+        // Checkbox/radio highlight
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('input[type="checkbox"], input[type="radio"]')) {
+                updateActiveCheckboxItems();
+            }
+        });
+
+        // 5. Initialize history table
+        initHistoryTable();
+    });
+    </script>
+</body>
+</html>
