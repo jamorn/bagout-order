@@ -175,7 +175,7 @@ function filterData(data, searchTerm) {
 
 export function renderHistoryTable(page = 1, containerId = 'right-table-container', searchTerm = currentSearchTerm) {
     currentSearchTerm = searchTerm;
-    const allData = getHistoryData();
+    const allData = getHistoryData() || [];
     
     // Sort by Order No DESC (newest first)
     const sortedData = [...allData].sort((a, b) => {
