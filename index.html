@@ -290,10 +290,11 @@
                                     </td>
                                     <td class="px-4 py-3">
                                         <div class="relative">
-                                            <input id="lotNo" name="lotNo" type="text" maxlength="10" pattern="[0-9]*" inputmode="numeric"
-                                                   class="bg-white/10 border border-purple-500/50 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-400 w-full min-w-[120px] pr-12"
-                                                   placeholder="Lot No." oninput="handleLotNoInput(this)" />
-                                            <span id="lotNoCount" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-purple-300 font-bold">0/10</span>
+                                              <input id="lotNo" name="lotNo" type="text" maxlength="10" pattern="[0-9]*" inputmode="numeric"
+                                                  class="bg-white/10 border border-purple-500/50 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-400 w-full min-w-[120px] pr-12"
+                                                  placeholder="Lot No." oninput="handleLotNoInput(this)" />
+                                              <span id="lotNoCount" class="absolute right-8 top-1/2 -translate-y-1/2 text-xs text-purple-300 font-bold">0/10</span>
+                                              <span id="lotCheck" class="absolute right-3 top-1/2 -translate-y-1/2 hidden text-green-400"><i class="fas fa-check-circle"></i></span>
                                         </div>
                                     </td>
                                     <td class="px-4 py-3">
@@ -321,6 +322,31 @@
                     </div>
 
                     <!-- Checkbox Group and Remarks Section -->
+                    <!-- Approval + Receive selectors -->
+                    <div class="mt-4 p-4 bg-white/5 rounded-xl border border-white/10 w-full">
+                        <h3 class="text-lg font-bold text-purple-300 mb-3">ผู้เกี่ยวข้อง (Mock)</h3>
+                        <div class="grid lg:grid-cols-3 gap-4">
+                            <div class="flex flex-col">
+                                <label for="issuerBy" class="text-sm text-purple-300 font-semibold mb-2">Issuer By (Boardman)</label>
+                                <select id="issuerBy" name="issuerBy" class="bg-white/10 border border-purple-500/50 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-400 w-full">
+                                    <option value="">-- Select Issuer --</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col">
+                                <label for="approverBy" class="text-sm text-purple-300 font-semibold mb-2">Approver By (Shift Sup.)</label>
+                                <select id="approverBy" name="approverBy" class="bg-white/10 border border-purple-500/50 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-400 w-full">
+                                    <option value="">-- Select Approver --</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col">
+                                <label for="receiveBy" class="text-sm text-purple-300 font-semibold mb-2">Receive By (Bagging)</label>
+                                <select id="receiveBy" name="receiveBy" class="bg-white/10 border border-purple-500/50 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-400 w-full">
+                                    <option value="">-- Select Receiver --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="grid lg:grid-cols-2 gap-8">
                         <!-- Left: Checkbox Group -->
                         <div class="space-y-4">
@@ -533,6 +559,13 @@
         if (pkg25) pkg25.checked = true;
         const selectPkgCustom = document.getElementById('select-pkg-custom');
         if (selectPkgCustom) selectPkgCustom.selectedIndex = 0;
+        // Reset person selects
+        const issuerSel = document.getElementById('issuerBy');
+        if (issuerSel) issuerSel.selectedIndex = 0;
+        const approverSel = document.getElementById('approverBy');
+        if (approverSel) approverSel.selectedIndex = 0;
+        const receiveSel = document.getElementById('receiveBy');
+        if (receiveSel) receiveSel.selectedIndex = 0;
         
         // Clear remarks and add one empty row
         const remarksList = document.getElementById('remarksList');
@@ -593,6 +626,54 @@
         const lotElInit = document.getElementById('lotNo');
         if (lotElInit && window.handleLotNoInput) window.handleLotNoInput(lotElInit);
 
+        // Mock people lists for Issuer / Approver / Receiver
+        const mockIssuers = ['Ananda Chaiyaporn', 'Narin Thammarat', 'Sutha Boonmee', 'Kanya Voranai', 'Prasit Wongsri'];
+        const mockApprovers = ['Somchai Rattanakorn', 'Wisit Patchara', 'Nattapong Jansri', 'Preecha Anuwat', 'Ratchanee S.'];
+        const mockReceivers = ['Bagging Team A', 'Bagging Team B', 'Nong Krai', 'Mali Chan', 'Somsak Bunmee'];
+        
+        // Populate person selects
+        function populatePersonSelect(id, list) {
+            const sel = document.getElementById(id);
+            if (!sel) return;
+            list.forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                sel.appendChild(opt);
+            });
+        }
+        populatePersonSelect('issuerBy', mockIssuers);
+        populatePersonSelect('approverBy', mockApprovers);
+        populatePersonSelect('receiveBy', mockReceivers);
+
+        // Migrate existing localStorage records to include person fields (no need to clear storage)
+        function migratePersonFields() {
+            const fdKey = 'formDataTable';
+            let fd = JSON.parse(localStorage.getItem(fdKey) || '[]');
+            let fdChanged = false;
+            fd = fd.map(r => {
+                const nr = Object.assign({}, r);
+                if (nr.issuerBy === undefined) { nr.issuerBy = ''; fdChanged = true; }
+                if (nr.approverBy === undefined) { nr.approverBy = ''; fdChanged = true; }
+                if (nr.receiveBy === undefined) { nr.receiveBy = ''; fdChanged = true; }
+                return nr;
+            });
+            if (fdChanged) localStorage.setItem(fdKey, JSON.stringify(fd));
+
+            const histKey = 'bagoutOrderHistory';
+            let hd = JSON.parse(localStorage.getItem(histKey) || '[]');
+            let hdChanged = false;
+            hd = hd.map(r => {
+                const nr = Object.assign({}, r);
+                if (nr.issuerBy === undefined) { nr.issuerBy = ''; hdChanged = true; }
+                if (nr.approverBy === undefined) { nr.approverBy = ''; hdChanged = true; }
+                if (nr.receiveBy === undefined) { nr.receiveBy = ''; hdChanged = true; }
+                return nr;
+            });
+            if (hdChanged) localStorage.setItem(histKey, JSON.stringify(hd));
+        }
+        migratePersonFields();
+
         // Add mock data if no existing data
         const existingData = JSON.parse(localStorage.getItem('formDataTable') || '[]');
         if (existingData.length === 0) {
@@ -601,6 +682,9 @@
                     orderDate: '2026-01-27T10:30',
                     orderNo: '001/26',
                     orderPO: '123456789',
+                    issuerBy: mockIssuers[0],
+                    approverBy: mockApprovers[0],
+                    receiveBy: mockReceivers[0],
                     bagSilo: 'S1',
                     bagLine: 'L1',
                     lotNo: '2601001',
@@ -614,6 +698,9 @@
                     orderDate: '2026-01-27T14:15',
                     orderNo: '002/26',
                     orderPO: '987654321',
+                    issuerBy: mockIssuers[1],
+                    approverBy: mockApprovers[1],
+                    receiveBy: mockReceivers[1],
                     bagSilo: 'S2',
                     bagLine: 'L2',
                     lotNo: '2601002',
@@ -656,6 +743,9 @@
                 orderDate: document.getElementById('orderDate').value,
                 orderNo: document.getElementById('orderNo').value,
                 orderPO: document.getElementById('orderPO').value,
+                issuerBy: document.getElementById('issuerBy') ? document.getElementById('issuerBy').value : '',
+                approverBy: document.getElementById('approverBy') ? document.getElementById('approverBy').value : '',
+                receiveBy: document.getElementById('receiveBy') ? document.getElementById('receiveBy').value : '',
                 bagSilo: document.getElementById('bagSilo').value,
                 bagLine: document.getElementById('bagLine').value,
                 lotNo: document.getElementById('lotNo').value,
