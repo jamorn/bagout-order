@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BAGOUT ORDER System - Modern Production Management</title>
-    
+    <link rel="shortcut icon" href="#"><!-- fix favicon.ico -->
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -621,7 +621,8 @@
             localStorage.setItem('formDataTable', JSON.stringify(mockData));
         }
 
-        // 3. Setup history table
+        // 3. Setup history table (ensure localStorage seeded before rendering)
+        initHistoryTable();
         renderHistoryTable(1, 'main-history-table');
 
         // 4. Setup events
@@ -693,8 +694,7 @@
             }
         });
 
-        // 5. Initialize history table
-        initHistoryTable();
+        // 5. Initialize history table (already initialized above)
     });
     </script>
 </body>
