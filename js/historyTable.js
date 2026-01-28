@@ -28,6 +28,15 @@ function populateFormFromRow(row) {
         }, 10);
     }
     if (row.lotNo) document.getElementById('lotNo').value = row.lotNo;
+    // Trigger input handlers to update counters and UI
+    if (window.handlePOInput) {
+        const poEl = document.getElementById('orderPO');
+        if (poEl) window.handlePOInput(poEl);
+    }
+    if (window.handleLotNoInput) {
+        const lotEl = document.getElementById('lotNo');
+        if (lotEl) window.handleLotNoInput(lotEl);
+    }
     if (row.bagType) document.getElementById('bagType').value = row.bagType;
     if (row.quantity) document.getElementById('quantity').value = row.quantity;
     if (row.remarkType) document.getElementById('remarkType').value = row.remarkType;
