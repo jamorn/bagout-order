@@ -6,6 +6,15 @@ const pageSize = 15;
 let currentSearchTerm = '';
 let expandedRows = new Set(); // Track expanded rows by index
 
+// Format timestamp (ISO or ms) to dd/MM/yyyy HH:mm
+function formatTimestamp(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) return '';
+    const pad = n => n.toString().padStart(2, '0');
+    return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 function populateFormFromRow(row) {
     // Populate basic form fields
     if (row.orderDate) {
@@ -27,6 +36,9 @@ function populateFormFromRow(row) {
             document.getElementById('bagLine').value = row.bagLine;
         }, 10);
     }
+    if (row.issuerBy) document.getElementById('issuerBy').value = row.issuerBy;
+    if (row.approverBy) document.getElementById('approverBy').value = row.approverBy;
+    if (row.receiveBy) document.getElementById('receiveBy').value = row.receiveBy;
     if (row.lotNo) document.getElementById('lotNo').value = row.lotNo;
     // Trigger input handlers to update counters and UI
     if (window.handlePOInput) {
@@ -117,6 +129,12 @@ export function addHistoryRecord(formData, checkboxRadioData) {
         orderDate: formData.orderDate || '',
         orderNo: formData.orderNo || '',
         orderPO: formData.orderPO || '',
+        issuerBy: formData.issuerBy || '',
+        approverBy: formData.approverBy || '',
+        receiveBy: formData.receiveBy || '',
+        issuerAt: formData.issuerBy ? new Date().toISOString() : '',
+        approverAt: formData.approverBy ? new Date().toISOString() : '',
+        receiveAt: formData.receiveBy ? new Date().toISOString() : '',
         bagSilo: formData.bagSilo || '',
         bagLine: formData.bagLine || '',
         lotNo: formData.lotNo || '',
@@ -149,6 +167,13 @@ export function updateHistoryRecord(index, formData, checkboxRadioData) {
         orderDate: formData.orderDate || '',
         orderNo: formData.orderNo || '',
         orderPO: formData.orderPO || '',
+        issuerBy: formData.issuerBy || '',
+        approverBy: formData.approverBy || '',
+        receiveBy: formData.receiveBy || '',
+        // Preserve existing timestamp if present; otherwise set to now when the person field is present
+        issuerAt: (historyData[index] && historyData[index].issuerAt) ? historyData[index].issuerAt : (formData.issuerBy ? new Date().toISOString() : ''),
+        approverAt: (historyData[index] && historyData[index].approverAt) ? historyData[index].approverAt : (formData.approverBy ? new Date().toISOString() : ''),
+        receiveAt: (historyData[index] && historyData[index].receiveAt) ? historyData[index].receiveAt : (formData.receiveBy ? new Date().toISOString() : ''),
         bagSilo: formData.bagSilo || '',
         bagLine: formData.bagLine || '',
         lotNo: formData.lotNo || '',
@@ -269,11 +294,37 @@ export function renderHistoryTable(page = 1, containerId = 'right-table-containe
                 html += `<tr class='bg-purple-800/30 border-b border-purple-500/20'>`;
                 html += `<td colspan='9' class='px-12 py-4'>`;
                 html += `<div class='grid grid-cols-2 gap-4 text-sm'>`;
+                // Left column
                 html += `<div><span class='font-semibold text-purple-300'>Line:</span> <span class='text-purple-200'>${row.bagLine}</span></div>`;
+                // Right column: Lot No
                 html += `<div><span class='font-semibold text-purple-300'>Lot No:</span> <span class='text-purple-200'>${row.lotNo || '-'}</span></div>`;
+                // Left column second row: Remark Type
                 html += `<div><span class='font-semibold text-purple-300'>Remark Type:</span> <span class='px-2 py-1 text-xs font-medium rounded-full ${row.remarkType === 'PREMIUM' ? 'bg-green-500/20 text-green-300' : 'bg-yellow-500/20 text-yellow-300'}'>${row.remarkType}</span></div>`;
+                // Left column: Selected Options (moved up beside Package/People)
+                html += `<div><span class='font-semibold text-purple-300'>Selected Options:</span> <span class='text-purple-200'>${row.selectedOptions || '-'}</span></div>`;
+                // Right column second row: Package + People box underneath
+                html += `<div>`;
                 html += `<div><span class='font-semibold text-purple-300'>Package:</span> <span class='text-purple-200'>${row.packageType === 'pkg-25' ? 'Package 25 kg' : `Package ${row.packageValue} KG`}</span></div>`;
-                html += `<div class='col-span-2'><span class='font-semibold text-purple-300'>Selected Options:</span> <span class='text-purple-200'>${row.selectedOptions || '-'}</span></div>`;
+                html += `<div class='mt-3 p-4 bg-purple-900/10 rounded min-h-[120px]'>`;
+                html += `<div class='text-sm text-purple-200 space-y-1'>`;
+                // Person badges with clearer, distinct background colors
+                html += `<div><span class='font-semibold text-purple-300'>Issuer:</span> <span class='inline-flex items-center'>` +
+                        (row.issuerBy ? `<span class='px-2 py-0.5 rounded text-xs font-medium bg-teal-500 text-white'>${row.issuerBy}</span>` : `<span class='px-2 py-0.5 rounded text-xs font-medium bg-gray-600 text-white'>-</span>`) +
+                        (row.issuerAt ? `<span class='ml-2 text-purple-300 text-xs'>• ${formatTimestamp(row.issuerAt)}</span>` : '') +
+                    `</span></div>`;
+
+                html += `<div><span class='font-semibold text-purple-300'>Approver:</span> <span class='inline-flex items-center'>` +
+                        (row.approverBy ? `<span class='px-2 py-0.5 rounded text-xs font-medium bg-amber-400 text-purple-900'>${row.approverBy}</span>` : `<span class='px-2 py-0.5 rounded text-xs font-medium bg-gray-600 text-white'>-</span>`) +
+                        (row.approverAt ? `<span class='ml-2 text-purple-300 text-xs'>• ${formatTimestamp(row.approverAt)}</span>` : '') +
+                    `</span></div>`;
+
+                html += `<div><span class='font-semibold text-purple-300'>Receiver:</span> <span class='inline-flex items-center'>` +
+                        (row.receiveBy ? `<span class='px-2 py-0.5 rounded text-xs font-medium bg-sky-500 text-white'>${row.receiveBy}</span>` : `<span class='px-2 py-0.5 rounded text-xs font-medium bg-gray-600 text-white'>-</span>`) +
+                        (row.receiveAt ? `<span class='ml-2 text-purple-300 text-xs'>• ${formatTimestamp(row.receiveAt)}</span>` : '') +
+                    `</span></div>`;
+                html += `</div></div>`;
+                html += `</div>`;
+                // Full width details below
                 html += `<div><span class='font-semibold text-purple-300'>Binary 8421:</span> <span class='text-purple-100 font-mono'>${row.binary8421} (${row.binaryString})</span></div>`;
                 if (row.remarks && row.remarks.length > 0) {
                     html += `<div class='col-span-2'><span class='font-semibold text-purple-300'>Remarks:</span><ul class='mt-1 ml-4 list-disc text-purple-200'>`;
