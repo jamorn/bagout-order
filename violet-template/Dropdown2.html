@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Violet Template - Beautiful Dropdowns</title>
+    <style>
+        /* ========== RESET & BASE STYLES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #e2e8f0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+        
+        .card {
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.9) 0%, rgba(22, 33, 62, 0.9) 100%);
+            border-radius: 18px;
+            padding: 2rem;
+            border: 1px solid rgba(102, 126, 234, 0.25);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.15);
+            border-color: rgba(102, 126, 234, 0.4);
+        }
+        
+        h2 {
+            color: #fff;
+            margin-bottom: 1.8rem;
+            font-size: 1.6rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid;
+            border-image: linear-gradient(90deg, #667eea 0%, #764ba2 100%) 1;
+            font-weight: 600;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin: 3rem 0 1.5rem;
+            color: #fff;
+            position: relative;
+            padding-left: 1rem;
+        }
+        
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: #a0aec0;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .description {
+            color: #a0aec0;
+            font-size: 0.9rem;
+            margin-top: 1.2rem;
+            line-height: 1.5;
+            padding: 0.8rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+        
+        /* ========== COUNTRY SELECT DROPDOWN ========== */
+        select.country-dropdown {
+            width: 100%;
+            padding: 14px 20px;
+            
+            /* Beautiful gradient background */
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            color: #e2e8f0;
+            
+            /* Stylish border */
+            border: 2px solid;
+            border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1;
+            border-radius: 12px;
+            
+            /* Typography */
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            
+            /* Custom arrow */
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            background-size: 20px;
+            
+            /* Shadow effects */
+            box-shadow: 
+                inset 0 2px 15px rgba(0, 0, 0, 0.4),
+                0 6px 20px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(102, 126, 234, 0.1);
+            
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Options styling */
+        select.country-dropdown option {
+            background: #1a1a2e;
+            color: #e2e8f0;
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Selected option */
+        select.country-dropdown option:checked {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+            color: #ffffff;
+            font-weight: 600;
+        }
+        
+        /* Hover effect for options */
+        select.country-dropdown option:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+        }
+        
+        /* Focus state */
+        select.country-dropdown:focus {
+            outline: none;
+            border-image: linear-gradient(135deg, #764ba2 0%, #667eea 100%) 1;
+            box-shadow: 
+                inset 0 2px 20px rgba(0, 0, 0, 0.5),
+                0 8px 30px rgba(102, 126, 234, 0.4),
+                0 0 0 3px rgba(102, 126, 234, 0.15);
+            background: linear-gradient(145deg, #1e1b3a 0%, #1c1c3e 100%);
+            transform: translateY(-2px);
+        }
+        
+        /* Hover state */
+        select.country-dropdown:hover {
+            border-image: linear-gradient(135deg, #764ba2 0%, #667eea 100%) 1;
+            background: linear-gradient(145deg, #1e1b3a 0%, #1a1a3e 100%);
+            box-shadow: 
+                inset 0 2px 20px rgba(0, 0, 0, 0.5),
+                0 8px 25px rgba(118, 75, 162, 0.3),
+                0 0 0 1px rgba(102, 126, 234, 0.2);
+        }
+        
+        /* Country flags for options */
+        select.country-dropdown option[value="th"] {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 6'%3E%3Cpath fill='%23ED1C24' d='M0 0h9v6H0z'/%3E%3Cpath fill='%23241D4F' d='M0 0h9v4H0z'/%3E%3Cpath fill='%23FFFFFF' d='M0 0h9v2H0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 15px center;
+            background-size: 28px 20px;
+            padding-left: 55px !important;
+        }
+        
+        select.country-dropdown option[value="us"] {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3Cpath d='M0 0v30h60V0z' fill='%2300195f'/%3E%3Cpath d='M0 0l60 30m0-30L0 30' stroke='%23fff' stroke-width='6'/%3E%3Cpath d='M0 0l60 30m0-30L0 30' stroke='%23c8102e' stroke-width='4'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23c8102e' stroke-width='6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 15px center;
+            background-size: 28px 20px;
+            padding-left: 55px !important;
+        }
+        
+        select.country-dropdown option[value="jp"] {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 6'%3E%3Cpath fill='%23FFFFFF' d='M0 0h9v6H0z'/%3E%3Ccircle cx='4.5' cy='3' r='1.5' fill='%23BC002D'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 15px center;
+            background-size: 28px 20px;
+            padding-left: 55px !important;
+        }
+        
+        /* Glass effect variant */
+        select.country-dropdown.glass {
+            background: rgba(26, 26, 46, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 
+                0 10px 35px rgba(31, 38, 135, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Gradient border variant */
+        select.country-dropdown.gradient-border {
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            border: double 3px transparent;
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            position: relative;
+        }
+        
+        select.country-dropdown.gradient-border::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            bottom: -3px;
+            left: -3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            border-radius: 15px;
+            z-index: -1;
+            opacity: 0.7;
+        }
+        
+        /* Animation for value change */
+        @keyframes selectSuccess {
+            0% { transform: translateY(0); }
+            25% { transform: translateY(-3px); }
+            50% { transform: translateY(0); }
+            75% { transform: translateY(-2px); }
+            100% { transform: translateY(0); }
+        }
+        
+        select.country-dropdown.changed {
+            animation: selectSuccess 0.6s ease;
+            border-image: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%) 1;
+        }
+        
+        /* ========== CUSTOM DROPDOWN STYLES ========== */
+        .dropdown-wrapper {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .custom-dropdown-container {
+            position: relative;
+            width: 100%;
+        }
+        
+        .dropdown-trigger {
+            width: 100%;
+            padding: 14px 20px;
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            border: 2px solid;
+            border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1;
+            border-radius: 12px;
+            color: #e2e8f0;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                inset 0 2px 10px rgba(0, 0, 0, 0.3),
+                0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .dropdown-trigger:hover {
+            border-image: linear-gradient(135deg, #764ba2 0%, #667eea 100%) 1;
+            background: linear-gradient(145deg, #1e1b3a 0%, #1a1a3e 100%);
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 2px 15px rgba(0, 0, 0, 0.4),
+                0 8px 25px rgba(118, 75, 162, 0.25);
+        }
+        
+        .dropdown-trigger.active {
+            border-image: linear-gradient(135deg, #764ba2 0%, #667eea 100%) 1;
+            box-shadow: 
+                inset 0 2px 20px rgba(0, 0, 0, 0.5),
+                0 8px 30px rgba(102, 126, 234, 0.3),
+                0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .dropdown-arrow {
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+        
+        .dropdown-trigger.active .dropdown-arrow {
+            transform: rotate(180deg);
+            color: #764ba2;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            border: 2px solid;
+            border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1;
+            border-radius: 14px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.6),
+                0 10px 40px rgba(102, 126, 234, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-15px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-height: 320px;
+            overflow-y: auto;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        .dropdown-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+        
+        .dropdown-item {
+            padding: 16px 20px;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #667eea 0%, #764ba2 100%);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            padding-left: 25px;
+        }
+        
+        .dropdown-item:hover::before {
+            transform: translateX(0);
+        }
+        
+        .dropdown-item.selected {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+            color: #ffffff;
+            font-weight: 600;
+        }
+        
+        .dropdown-item.selected::before {
+            transform: translateX(0);
+        }
+        
+        .item-icon {
+            color: #667eea;
+            font-size: 1.3rem;
+            width: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover .item-icon {
+            color: #764ba2;
+            transform: scale(1.2);
+        }
+        
+        .item-badge {
+            margin-left: auto;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+        
+        /* ========== SCROLLBAR STYLING ========== */
+        .dropdown-menu::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .dropdown-menu::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .dropdown-menu::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+        
+        .dropdown-menu::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+        
+        /* ========== RESPONSIVE DESIGN ========== */
+        @media (max-width: 768px) {
+            body {
+                padding: 1.5rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            h2 {
+                font-size: 1.4rem;
+            }
+            
+            select.country-dropdown,
+            .dropdown-trigger {
+                font-size: 16px; /* Prevent zoom on iOS */
+                padding: 16px 20px;
+            }
+            
+            .dropdown-menu {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.9);
+                width: 90vw;
+                max-width: 500px;
+                max-height: 70vh;
+                z-index: 9999;
+            }
+            
+            .dropdown-menu.active {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        
+        /* ========== DEBUG PANEL ========== */
+        .debug-panel {
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 3rem;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .debug-title {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .debug-title::before {
+            content: '📊';
+            font-size: 1.2rem;
+        }
+        
+        #debugInfo {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 1.5rem;
+            border-radius: 12px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            min-height: 100px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .debug-empty {
+            color: #a0aec0;
+            font-style: italic;
+            opacity: 0.7;
+        }
+        
+        .debug-item {
+            padding: 8px 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 140px;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        /* ========== ANIMATIONS ========== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* ========== LOADING STATE ========== */
+        .dropdown-loading {
+            padding: 30px 20px;
+            text-align: center;
+            color: #a0aec0;
+        }
+        
+        .spinner-small {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #667eea;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 12px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="fade-in">🌙 Violet Dropdown Styles</h1>
+        
+        <h2 class="section-title">Country Selection</h2>
+        
+        <div class="grid">
+            <!-- Example 1: Country Select Dropdown -->
+            <div class="card fade-in" style="animation-delay: 0.1s">
+                <h2>🌍 Country Select</h2>
+                <div class="dropdown-wrapper">
+                    <label for="countrySelect">Choose your country:</label>
+                    <select id="countrySelect" class="country-dropdown glass">
+                        <option value="">-- Select a country --</option>
+                        <option value="th">🇹🇭 Thailand</option>
+                        <option value="us">🇺🇸 United States</option>
+                        <option value="jp">🇯🇵 Japan</option>
+                        <option value="kr">🇰🇷 South Korea</option>
+                        <option value="sg">🇸🇬 Singapore</option>
+                        <option value="uk">🇬🇧 United Kingdom</option>
+                        <option value="au">🇦🇺 Australia</option>
+                        <option value="cn">🇨🇳 China</option>
+                        <option value="de">🇩🇪 Germany</option>
+                        <option value="fr">🇫🇷 France</option>
+                    </select>
+                </div>
+                <div class="description">
+                    Native select element with custom gradient background, border effects, and country flags. Features glass morphism effect and smooth animations.
+                </div>
+            </div>
+            
+            <!-- Example 2: Custom Feature Dropdown -->
+            <div class="card fade-in" style="animation-delay: 0.2s">
+                <h2>✨ Feature Selection</h2>
+                <div class="dropdown-wrapper">
+                    <label>Select a feature:</label>
+                    <div class="custom-dropdown-container" id="featureDropdown">
+                        <button class="dropdown-trigger" data-value="">
+                            <span class="selected-text">Choose a feature...</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" data-value="premium">
+                                <span class="item-icon">⭐</span>
+                                <span>Premium Features</span>
+                                <span class="item-badge">PRO</span>
+                            </div>
+                            <div class="dropdown-item" data-value="analytics">
+                                <span class="item-icon">📊</span>
+                                <span>Advanced Analytics</span>
+                                <span class="item-badge">NEW</span>
+                            </div>
+                            <div class="dropdown-item" data-value="security">
+                                <span class="item-icon">🔒</span>
+                                <span>Security Suite</span>
+                            </div>
+                            <div class="dropdown-item" data-value="automation">
+                                <span class="item-icon">⚙️</span>
+                                <span>Workflow Automation</span>
+                            </div>
+                            <div class="dropdown-item" data-value="integrations">
+                                <span class="item-icon">🔗</span>
+                                <span>Third-party Integrations</span>
+                            </div>
+                            <div class="dropdown-item" data-value="support">
+                                <span class="item-icon">💬</span>
+                                <span>24/7 Support</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="description">
+                    Fully custom dropdown with gradient borders, hover effects, badges, and smooth animations. Built with pure JavaScript.
+                </div>
+            </div>
+            
+            <!-- Example 3: Status Dropdown -->
+            <div class="card fade-in" style="animation-delay: 0.3s">
+                <h2>📊 Status Selector</h2>
+                <div class="dropdown-wrapper">
+                    <label>Filter by status:</label>
+                    <div class="custom-dropdown-container" id="statusDropdown">
+                        <button class="dropdown-trigger" data-value="">
+                            <span class="selected-text">Select status...</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" data-value="active">
+                                <span class="item-icon">🟢</span>
+                                <span>Active</span>
+                                <span class="item-badge" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">42</span>
+                            </div>
+                            <div class="dropdown-item" data-value="pending">
+                                <span class="item-icon">🟡</span>
+                                <span>Pending</span>
+                                <span class="item-badge" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);">18</span>
+                            </div>
+                            <div class="dropdown-item" data-value="completed">
+                                <span class="item-icon">🔵</span>
+                                <span>Completed</span>
+                                <span class="item-badge" style="background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);">156</span>
+                            </div>
+                            <div class="dropdown-item" data-value="cancelled">
+                                <span class="item-icon">🔴</span>
+                                <span>Cancelled</span>
+                                <span class="item-badge" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);">7</span>
+                            </div>
+                            <div class="dropdown-item" data-value="archived">
+                                <span class="item-icon">⚫</span>
+                                <span>Archived</span>
+                                <span class="item-badge" style="background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);">89</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="description">
+                    Status selector with color-coded badges showing item counts. Features gradient badges and smooth selection animations.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Debug Panel -->
+        <div class="debug-panel fade-in" style="animation-delay: 0.4s">
+            <h2 class="debug-title">Current Selection</h2>
+            <div id="debugInfo">
+                <div class="debug-empty">No selections made yet...</div>
+            </div>
+            
+            <div class="button-group">
+                <button id="resetBtn" class="btn btn-primary">
+                    <span>🔄</span>
+                    Reset All
+                </button>
+                <button id="copyBtn" class="btn btn-secondary">
+                    <span>📋</span>
+                    Copy Values
+                </button>
+                <button id="testBtn" class="btn btn-secondary">
+                    <span>🎯</span>
+                    Test Random
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== DROPDOWN MANAGER CLASS ==========
+        class DropdownManager {
+            constructor() {
+                this.activeDropdown = null;
+                this.init();
+            }
+            
+            init() {
+                this.setupCountrySelect();
+                this.setupCustomDropdowns();
+                this.setupEventListeners();
+                this.setupButtons();
+                this.loadSavedSelections();
+            }
+            
+            setupCountrySelect() {
+                const countrySelect = document.getElementById('countrySelect');
+                
+                // Load saved country
+                const savedCountry = localStorage.getItem('countrySelection');
+                if (savedCountry) {
+                    countrySelect.value = savedCountry;
+                }
+                
+                // Change event with animation
+                countrySelect.addEventListener('change', (e) => {
+                    localStorage.setItem('countrySelection', e.target.value);
+                    this.animateSelect(countrySelect);
+                    this.updateDebugInfo();
+                });
+                
+                // Hover effects
+                countrySelect.addEventListener('mouseenter', () => {
+                    countrySelect.style.transform = 'translateY(-2px)';
+                });
+                
+                countrySelect.addEventListener('mouseleave', () => {
+                    if (document.activeElement !== countrySelect) {
+                        countrySelect.style.transform = 'translateY(0)';
+                    }
+                });
+            }
+            
+            setupCustomDropdowns() {
+                const dropdowns = ['featureDropdown', 'statusDropdown'];
+                
+                dropdowns.forEach(id => {
+                    const container = document.getElementById(id);
+                    const trigger = container.querySelector('.dropdown-trigger');
+                    const menu = container.querySelector('.dropdown-menu');
+                    const items = menu.querySelectorAll('.dropdown-item');
+                    
+                    // Load saved selection
+                    const savedValue = localStorage.getItem(id);
+                    if (savedValue) {
+                        this.selectCustomItem(container, savedValue);
+                    }
+                    
+                    // Toggle dropdown
+                    trigger.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.toggleDropdown(container);
+                    });
+                    
+                    // Select item
+                    items.forEach(item => {
+                        item.addEventListener('click', () => {
+                            const value = item.dataset.value;
+                            const text = item.querySelector('span:nth-child(2)').textContent;
+                            this.selectCustomItem(container, value, text);
+                            this.closeAllDropdowns();
+                            this.updateDebugInfo();
+                        });
+                    });
+                });
+            }
+            
+            setupEventListeners() {
+                // Close dropdowns when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.custom-dropdown-container')) {
+                        this.closeAllDropdowns();
+                    }
+                });
+                
+                // Close with Escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.closeAllDropdowns();
+                    }
+                });
+            }
+            
+            setupButtons() {
+                // Reset button
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    this.resetAllSelections();
+                });
+                
+                // Copy button
+                document.getElementById('copyBtn').addEventListener('click', () => {
+                    this.copySelections();
+                });
+                
+                // Test button
+                document.getElementById('testBtn').addEventListener('click', () => {
+                    this.testRandomSelections();
+                });
+            }
+            
+            loadSavedSelections() {
+                this.updateDebugInfo();
+            }
+            
+            toggleDropdown(container) {
+                const isActive = container.classList.contains('active');
+                
+                this.closeAllDropdowns();
+                
+                if (!isActive) {
+                    container.classList.add('active');
+                    container.querySelector('.dropdown-trigger').classList.add('active');
+                    container.querySelector('.dropdown-menu').classList.add('active');
+                    this.activeDropdown = container;
+                }
+            }
+            
+            closeAllDropdowns() {
+                document.querySelectorAll('.custom-dropdown-container.active').forEach(container => {
+                    container.classList.remove('active');
+                    container.querySelector('.dropdown-trigger').classList.remove('active');
+                    container.querySelector('.dropdown-menu').classList.remove('active');
+                });
+                this.activeDropdown = null;
+            }
+            
+            selectCustomItem(container, value, text = null) {
+                const trigger = container.querySelector('.dropdown-trigger');
+                const menu = container.querySelector('.dropdown-menu');
+                const items = menu.querySelectorAll('.dropdown-item');
+                
+                // Clear previous selection
+                items.forEach(item => item.classList.remove('selected'));
+                
+                // Find and select new item
+                const selectedItem = menu.querySelector(`[data-value="${value}"]`);
+                if (selectedItem) {
+                    selectedItem.classList.add('selected');
+                    
+                    if (!text) {
+                        text = selectedItem.querySelector('span:nth-child(2)').textContent;
+                    }
+                    
+                    trigger.querySelector('.selected-text').textContent = text;
+                    trigger.dataset.value = value;
+                    
+                    // Save to localStorage
+                    localStorage.setItem(container.id, value);
+                    
+                    // Add pulse animation
+                    trigger.classList.add('pulse');
+                    setTimeout(() => trigger.classList.remove('pulse'), 2000);
+                }
+            }
+            
+            animateSelect(selectElement) {
+                selectElement.classList.add('changed');
+                setTimeout(() => selectElement.classList.remove('changed'), 600);
+            }
+            
+            updateDebugInfo() {
+                const debugEl = document.getElementById('debugInfo');
+                const data = [];
+                
+                // Country select
+                const countrySelect = document.getElementById('countrySelect');
+                if (countrySelect.value) {
+                    const countryText = countrySelect.options[countrySelect.selectedIndex].text;
+                    data.push(`<div class="debug-item"><strong>🌍 Country:</strong> ${countryText}</div>`);
+                }
+                
+                // Custom dropdowns
+                const customDropdowns = ['featureDropdown', 'statusDropdown'];
+                customDropdowns.forEach(id => {
+                    const container = document.getElementById(id);
+                    if (container) {
+                        const trigger = container.querySelector('.dropdown-trigger');
+                        if (trigger.dataset.value) {
+                            data.push(`<div class="debug-item"><strong>${this.getDropdownName(id)}:</strong> ${trigger.querySelector('.selected-text').textContent}</div>`);
+                        }
+                    }
+                });
+                
+                debugEl.innerHTML = data.length > 0 
+                    ? data.join('')
+                    : '<div class="debug-empty">No selections made yet...</div>';
+            }
+            
+            getDropdownName(id) {
+                const names = {
+                    'featureDropdown': '✨ Feature',
+                    'statusDropdown': '📊 Status'
+                };
+                return names[id] || id;
+            }
+            
+            resetAllSelections() {
+                // Reset country select
+                const countrySelect = document.getElementById('countrySelect');
+                countrySelect.value = '';
+                localStorage.removeItem('countrySelection');
+                this.animateSelect(countrySelect);
+                
+                // Reset custom dropdowns
+                ['featureDropdown', 'statusDropdown'].forEach(id => {
+                    const container = document.getElementById(id);
+                    if (container) {
+                        const trigger = container.querySelector('.dropdown-trigger');
+                        trigger.querySelector('.selected-text').textContent = this.getDefaultText(id);
+                        trigger.dataset.value = '';
+                        
+                        const items = container.querySelectorAll('.dropdown-item');
+                        items.forEach(item => item.classList.remove('selected'));
+                        
+                        localStorage.removeItem(id);
+                    }
+                });
+                
+                this.updateDebugInfo();
+                this.closeAllDropdowns();
+                
+                // Show notification
+                this.showNotification('All selections have been reset!', 'success');
+            }
+            
+            getDefaultText(id) {
+                const defaults = {
+                    'featureDropdown': 'Choose a feature...',
+                    'statusDropdown': 'Select status...'
+                };
+                return defaults[id] || 'Select...';
+            }
+            
+            copySelections() {
+                const selections = [];
+                
+                // Country
+                const countrySelect = document.getElementById('countrySelect');
+                if (countrySelect.value) {
+                    selections.push(`Country: ${countrySelect.options[countrySelect.selectedIndex].text}`);
+                }
+                
+                // Custom dropdowns
+                ['featureDropdown', 'statusDropdown'].forEach(id => {
+                    const container = document.getElementById(id);
+                    if (container) {
+                        const trigger = container.querySelector('.dropdown-trigger');
+                        if (trigger.dataset.value) {
+                            selections.push(`${this.getDropdownName(id)}: ${trigger.querySelector('.selected-text').textContent}`);
+                        }
+                    }
+                });
+                
+                if (selections.length > 0) {
+                    const text = selections.join('\n');
+                    navigator.clipboard.writeText(text)
+                        .then(() => this.showNotification('Selections copied to clipboard!', 'success'))
+                        .catch(() => this.showNotification('Failed to copy', 'error'));
+                } else {
+                    this.showNotification('No selections to copy', 'warning');
+                }
+            }
+            
+            testRandomSelections() {
+                // Random country
+                const countryOptions = ['th', 'us', 'jp', 'kr', 'sg', 'uk', 'au', 'cn'];
+                const randomCountry = countryOptions[Math.floor(Math.random() * countryOptions.length)];
+                document.getElementById('countrySelect').value = randomCountry;
+                localStorage.setItem('countrySelection', randomCountry);
+                this.animateSelect(document.getElementById('countrySelect'));
+                
+                // Random feature
+                const featureOptions = ['premium', 'analytics', 'security', 'automation', 'integrations'];
+                const randomFeature = featureOptions[Math.floor(Math.random() * featureOptions.length)];
+                const featureContainer = document.getElementById('featureDropdown');
+                const featureItem = featureContainer.querySelector(`[data-value="${randomFeature}"]`);
+                if (featureItem) {
+                    const text = featureItem.querySelector('span:nth-child(2)').textContent;
+                    this.selectCustomItem(featureContainer, randomFeature, text);
+                }
+                
+                // Random status
+                const statusOptions = ['active', 'pending', 'completed', 'cancelled', 'archived'];
+                const randomStatus = statusOptions[Math.floor(Math.random() * statusOptions.length)];
+                const statusContainer = document.getElementById('statusDropdown');
+                const statusItem = statusContainer.querySelector(`[data-value="${randomStatus}"]`);
+                if (statusItem) {
+                    const text = statusItem.querySelector('span:nth-child(2)').textContent;
+                    this.selectCustomItem(statusContainer, randomStatus, text);
+                }
+                
+                this.closeAllDropdowns();
+                this.updateDebugInfo();
+                this.showNotification('Random test values applied!', 'success');
+            }
+            
+            showNotification(message, type) {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.textContent = message;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 15px 25px;
+                    background: ${type === 'success' 
+                        ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' 
+                        : type === 'error' 
+                        ? 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)'
+                        : 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)'};
+                    color: white;
+                    border-radius: 10px;
+                    font-weight: 600;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+                    z-index: 9999;
+                    animation: slideIn 0.3s ease;
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+                
+                // Add animation styles
+                if (!document.querySelector('#notification-styles')) {
+                    const style = document.createElement('style');
+                    style.id = 'notification-styles';
+                    style.textContent = `
+                        @keyframes slideIn {
+                            from { transform: translateX(100%); opacity: 0; }
+                            to { transform: translateX(0); opacity: 1; }
+                        }
+                        @keyframes slideOut {
+                            from { transform: translateX(0); opacity: 1; }
+                            to { transform: translateX(100%); opacity: 0; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+        }
+        
+        // ========== INITIALIZE ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdownManager = new DropdownManager();
+            
+            // Make manager available globally for debugging
+            window.dropdownManager = dropdownManager;
+            
+            console.log('🌈 Violet Dropdown System Initialized');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dropdown ที่ทำงานปกติ</title>
+    <style>
+        /* RESET และ Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #e2e8f0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .card {
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 16px;
+            padding: 1.8rem;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        h2 {
+            color: #fff;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: #a0aec0;
+            font-weight: 500;
+        }
+        
+        /* ========== DROPDOWN STYLES ========== */
+        .dropdown-wrapper {
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Native Select Styling */
+        select.native-dropdown {
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #7cd362;
+            border: 1px solid rgba(102, 126, 234, 0.4);
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        /* Stronger option styling to ensure dark dropdown on supporting browsers */
+        select.native-dropdown {
+            color-scheme: dark;
+        }
+        select.native-dropdown option {
+            background-color: #21122b !important; /* dark purple */
+            background-image: none !important;
+            color: #e8f8f3 !important; /* near-white */
+        }
+
+        /* Hover/selected accent (softer glow) */
+        select.native-dropdown option:hover,
+        select.native-dropdown option:checked {
+            background-color: #9F7AEA !important; /* softer purple glow */
+            color: #e2e8f0 !important;
+        }
+        
+        select.native-dropdown:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        select.native-dropdown:hover {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, #1e1b3a 0%, #1a1a3e 100%);
+        }
+        
+        /* Custom Dropdown Container */
+        .custom-dropdown-container {
+            position: relative;
+            width: 100%;
+        }
+        
+        /* Custom Dropdown Trigger */
+        .dropdown-trigger {
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(102, 126, 234, 0.4);
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-trigger:hover {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, #1e1b3a 0%, #1a1a3e 100%);
+        }
+        
+        .dropdown-trigger.active {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+        }
+        
+        .dropdown-trigger.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        /* Custom Dropdown Menu */
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(102, 126, 234, 0.4);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .dropdown-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        /* Dropdown Items */
+        .dropdown-item {
+            padding: 12px 16px;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-item:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            padding-left: 20px;
+        }
+        
+        .dropdown-item.selected {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .item-icon {
+            color: #667eea;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .dropdown-item:hover .item-icon {
+            color: #764ba2;
+        }
+        
+        /* Badge */
+        .item-badge {
+            margin-left: auto;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        /* Scrollbar Styling */
+        .dropdown-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .dropdown-menu::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+        
+        .dropdown-menu::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dropdown-menu {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.9);
+                width: 90vw;
+                max-width: 400px;
+                max-height: 70vh;
+            }
+            
+            .dropdown-menu.active {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dropdown ที่ทำงานปกติ</h1>
+        
+        <div class="grid">
+            <!-- Example 1: Native Select -->
+            <div class="card">
+                <h2>1. Native Select Dropdown</h2>
+                <div class="dropdown-wrapper">
+                    <label for="countrySelect">เลือกประเทศ:</label>
+                    <select id="countrySelect" class="native-dropdown">
+                        <option value="">-- โปรดเลือก --</option>
+                        <option value="th">🇹🇭 ประเทศไทย</option>
+                        <option value="us">🇺🇸 สหรัฐอเมริกา</option>
+                        <option value="jp">🇯🇵 ญี่ปุ่น</option>
+                        <option value="kr">🇰🇷 เกาหลีใต้</option>
+                        <option value="sg">🇸🇬 สิงคโปร์</option>
+                    </select>
+                </div>
+                <p style="color: #a0aec0; font-size: 0.9rem; margin-top: 1rem;">
+                    ใช้ native select ปกติ ทำงานได้ทุกเบราว์เซอร์
+                </p>
+            </div>
+            
+            <!-- Example 2: Custom Dropdown -->
+            <div class="card">
+                <h2>2. Custom Dropdown</h2>
+                <div class="dropdown-wrapper">
+                    <label>เลือกฟีเจอร์:</label>
+                    <div class="custom-dropdown-container" id="customDropdown1">
+                        <button class="dropdown-trigger" data-value="">
+                            <span class="selected-text">เลือกฟีเจอร์...</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" data-value="premium">
+                                <span class="item-icon">⭐</span>
+                                <span>Premium Feature</span>
+                                <span class="item-badge">NEW</span>
+                            </div>
+                            <div class="dropdown-item" data-value="settings">
+                                <span class="item-icon">⚙️</span>
+                                <span>Settings</span>
+                            </div>
+                            <div class="dropdown-item" data-value="analytics">
+                                <span class="item-icon">📊</span>
+                                <span>Analytics</span>
+                            </div>
+                            <div class="dropdown-item" data-value="security">
+                                <span class="item-icon">🔒</span>
+                                <span>Security</span>
+                            </div>
+                            <div class="dropdown-item" data-value="help">
+                                <span class="item-icon">❓</span>
+                                <span>Help & Support</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p style="color: #a0aec0; font-size: 0.9rem; margin-top: 1rem;">
+                    Custom dropdown ที่ควบคุมด้วย JavaScript
+                </p>
+            </div>
+            
+            <!-- Example 3: Multiple Dropdowns -->
+            <div class="card">
+                <h2>3. Dropdown หลายตัวในหน้าเดียวกัน</h2>
+                
+                <div class="dropdown-wrapper">
+                    <label>เลือกหมวดหมู่:</label>
+                    <div class="custom-dropdown-container" id="categoryDropdown">
+                        <button class="dropdown-trigger" data-value="">
+                            <span class="selected-text">เลือกหมวดหมู่...</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" data-value="design">
+                                <span class="item-icon">🎨</span>
+                                <span>Design</span>
+                            </div>
+                            <div class="dropdown-item" data-value="development">
+                                <span class="item-icon">💻</span>
+                                <span>Development</span>
+                            </div>
+                            <div class="dropdown-item" data-value="marketing">
+                                <span class="item-icon">📈</span>
+                                <span>Marketing</span>
+                            </div>
+                            <div class="dropdown-item" data-value="finance">
+                                <span class="item-icon">💰</span>
+                                <span>Finance</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dropdown-wrapper">
+                    <label>เลือกสถานะ:</label>
+                    <div class="custom-dropdown-container" id="statusDropdown">
+                        <button class="dropdown-trigger" data-value="">
+                            <span class="selected-text">เลือกสถานะ...</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" data-value="active">
+                                <span class="item-icon">🟢</span>
+                                <span>Active</span>
+                            </div>
+                            <div class="dropdown-item" data-value="pending">
+                                <span class="item-icon">🟡</span>
+                                <span>Pending</span>
+                            </div>
+                            <div class="dropdown-item" data-value="completed">
+                                <span class="item-icon">🔵</span>
+                                <span>Completed</span>
+                            </div>
+                            <div class="dropdown-item" data-value="cancelled">
+                                <span class="item-icon">🔴</span>
+                                <span>Cancelled</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p style="color: #a0aec0; font-size: 0.9rem; margin-top: 1rem;">
+                    หลาย dropdown ในหน้าเดียว ปิดอัตโนมัติเมื่อเปิดอีกตัว
+                </p>
+            </div>
+        </div>
+        
+        <!-- Debug Info -->
+        <div class="card" style="margin-top: 3rem;">
+            <h2>สถานะปัจจุบัน</h2>
+            <div id="debugInfo" style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; font-family: monospace;">
+                รอการเลือกค่า...
+            </div>
+            <button id="resetBtn" style="margin-top: 1rem; padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                รีเซ็ตทั้งหมด
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ========== DROPDOWN MANAGEMENT SYSTEM ==========
+        
+        class DropdownManager {
+            constructor() {
+                this.activeDropdown = null;
+                this.init();
+            }
+            
+            init() {
+                this.setupDropdowns();
+                this.setupEventListeners();
+                this.setupResetButton();
+            }
+            
+            setupDropdowns() {
+                // หา dropdown containers ทั้งหมด
+                const dropdownContainers = document.querySelectorAll('.custom-dropdown-container');
+                
+                dropdownContainers.forEach(container => {
+                    const trigger = container.querySelector('.dropdown-trigger');
+                    const menu = container.querySelector('.dropdown-menu');
+                    const items = menu.querySelectorAll('.dropdown-item');
+                    
+                    // ตั้งค่าเริ่มต้น
+                    const savedValue = localStorage.getItem(container.id);
+                    if (savedValue) {
+                        this.selectItem(container, savedValue);
+                    }
+                    
+                    // Trigger click
+                    trigger.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.toggleDropdown(container);
+                    });
+                    
+                    // Item click
+                    items.forEach(item => {
+                        item.addEventListener('click', () => {
+                            const value = item.dataset.value;
+                            const text = item.querySelector('span:not(.item-icon):not(.item-badge)').textContent;
+                            this.selectItem(container, value, text);
+                            this.closeAllDropdowns();
+                            this.updateDebugInfo();
+                        });
+                    });
+                });
+            }
+            
+            setupEventListeners() {
+                // ปิด dropdown เมื่อคลิกนอกพื้นที่
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.custom-dropdown-container')) {
+                        this.closeAllDropdowns();
+                    }
+                });
+                
+                // ปิดด้วยปุ่ม ESC
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.closeAllDropdowns();
+                    }
+                });
+                
+                // ป้องกันการ scroll เมื่อ dropdown เปิด (optional)
+                document.addEventListener('wheel', (e) => {
+                    if (this.activeDropdown && !e.target.closest('.dropdown-menu')) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+            }
+            
+            setupResetButton() {
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    this.resetAllDropdowns();
+                });
+            }
+            
+            toggleDropdown(container) {
+                const isActive = container.classList.contains('active');
+                
+                // ปิด dropdown อื่นๆ ก่อน
+                this.closeAllDropdowns();
+                
+                if (!isActive) {
+                    // เปิด dropdown นี้
+                    container.classList.add('active');
+                    container.querySelector('.dropdown-trigger').classList.add('active');
+                    container.querySelector('.dropdown-menu').classList.add('active');
+                    this.activeDropdown = container;
+                }
+            }
+            
+            closeAllDropdowns() {
+                document.querySelectorAll('.custom-dropdown-container.active').forEach(container => {
+                    container.classList.remove('active');
+                    container.querySelector('.dropdown-trigger').classList.remove('active');
+                    container.querySelector('.dropdown-menu').classList.remove('active');
+                });
+                this.activeDropdown = null;
+            }
+            
+            selectItem(container, value, text = null) {
+                const trigger = container.querySelector('.dropdown-trigger');
+                const menu = container.querySelector('.dropdown-menu');
+                const items = menu.querySelectorAll('.dropdown-item');
+                
+                // ล้าง selected state ทั้งหมด
+                items.forEach(item => item.classList.remove('selected'));
+                
+                // หา item ที่เลือก
+                const selectedItem = menu.querySelector(`[data-value="${value}"]`);
+                if (selectedItem) {
+                    selectedItem.classList.add('selected');
+                    
+                    // อัพเดท trigger text
+                    if (!text) {
+                        text = selectedItem.querySelector('span:not(.item-icon):not(.item-badge)').textContent;
+                    }
+                    trigger.querySelector('.selected-text').textContent = text;
+                    trigger.dataset.value = value;
+                    
+                    // บันทึกใน localStorage
+                    localStorage.setItem(container.id, value);
+                }
+            }
+            
+            resetAllDropdowns() {
+                document.querySelectorAll('.custom-dropdown-container').forEach(container => {
+                    const trigger = container.querySelector('.dropdown-trigger');
+                    trigger.querySelector('.selected-text').textContent = 'เลือก...';
+                    trigger.dataset.value = '';
+                    
+                    const items = container.querySelectorAll('.dropdown-item');
+                    items.forEach(item => item.classList.remove('selected'));
+                    
+                    localStorage.removeItem(container.id);
+                });
+                
+                document.getElementById('countrySelect').value = '';
+                this.updateDebugInfo();
+                this.closeAllDropdowns();
+            }
+            
+            updateDebugInfo() {
+                const debugEl = document.getElementById('debugInfo');
+                const data = [];
+                
+                // Native select
+                const countrySelect = document.getElementById('countrySelect');
+                if (countrySelect.value) {
+                    data.push(`ประเทศ: ${countrySelect.options[countrySelect.selectedIndex].text}`);
+                }
+                
+                // Custom dropdowns
+                document.querySelectorAll('.custom-dropdown-container').forEach(container => {
+                    const trigger = container.querySelector('.dropdown-trigger');
+                    if (trigger.dataset.value) {
+                        data.push(`${container.id}: ${trigger.querySelector('.selected-text').textContent}`);
+                    }
+                });
+                
+                debugEl.innerHTML = data.length > 0 
+                    ? data.join('<br>')
+                    : 'รอการเลือกค่า...';
+            }
+        }
+        
+        // ========== INITIALIZE ==========
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdownManager = new DropdownManager();
+            
+            // Native select change event
+            document.getElementById('countrySelect').addEventListener('change', () => {
+                dropdownManager.updateDebugInfo();
+            });
+            
+            // Initial debug info
+            dropdownManager.updateDebugInfo();
+        });
+    </script>
+</body>
+</html>
