@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bagging Queue - BAGOUT ORDER</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="violet-template/css/template.css">
+    <link rel="stylesheet" href="css/label.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 min-h-screen text-white">
+<header class="bg-gradient-to-r from-purple-800 to-blue-600 shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-industry text-yellow-400 text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold">BAGOUT ORDER - Bagging</h1>
+            </div>
+            <nav class="flex items-center gap-2">
+                <a href="index.html" class="nav-unit px-4 py-2 rounded-lg text-white/80 font-medium transition hover:bg-white/20 hover:text-white">PP</a>
+                <a href="bagging.html" class="nav-unit active px-4 py-2 rounded-lg bg-white/20 text-white font-semibold transition hover:bg-white/30">Bagging</a>
+                <a href="hdpe.html" class="nav-unit px-4 py-2 rounded-lg text-white/80 font-medium transition hover:bg-white/20 hover:text-white">HDPE</a>
+                <a href="ppc.html" class="nav-unit px-4 py-2 rounded-lg text-white/80 font-medium transition hover:bg-white/20 hover:text-white">PPC</a>
+            </nav>
+        </div>
+    </div>
+</header>
+<main class="container mx-auto px-4 py-8">
+    <section class="bg-white/5 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/10">
+        <h2 class="text-2xl font-bold mb-6 flex items-center gap-2"><i class="fas fa-boxes text-purple-400"></i>Bagging Queue</h2>
+        <div id="bagging-history-table"></div>
+    </section>
+</main>
+
+<!-- Receive Modal -->
+<div id="receiveModal" class="fixed inset-0 hidden items-center justify-center bg-black/50 z-50">
+    <div class="bg-white rounded-lg w-96 p-4 text-gray-900">
+        <h3 class="font-bold text-lg mb-2">Confirm Receive</h3>
+        <div id="receiveModalBody" class="text-sm text-gray-700 mb-4">Loading...</div>
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Receiver</label>
+            <input id="receiveName" class="w-full border rounded px-3 py-2" placeholder="ชื่อผู้รับ" />
+        </div>
+        <div class="flex justify-end gap-2">
+            <button id="receiveCancel" class="px-4 py-2 rounded bg-gray-300">Cancel</button>
+            <button id="receiveConfirm" class="px-4 py-2 rounded bg-indigo-600 text-white">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { initHistoryTable, renderBaggingTable, confirmReceive } from './js/historyTable.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+    initHistoryTable();
+    renderBaggingTable(1, 'bagging-history-table');
+
+    // Modal helpers
+    let _currentReceiveIdx = null;
+    window.openReceiveModal = (idx) => {
+        const data = JSON.parse(localStorage.getItem('bagoutOrderHistory')) || [];
+        const row = data[idx];
+        if (!row) return;
+        _currentReceiveIdx = idx;
+        const body = document.getElementById('receiveModalBody');
+        body.innerHTML = `PO: <strong>${row.orderPO}</strong><br/>Silo: <strong>${row.bagSilo}</strong><br/>Qty: <strong>${row.quantity}</strong>`;
+        const nameInput = document.getElementById('receiveName');
+        nameInput.value = row.receiveBy || '';
+        document.getElementById('receiveModal').style.display = 'flex';
+    };
+
+    document.getElementById('receiveCancel').addEventListener('click', () => {
+        document.getElementById('receiveModal').style.display = 'none';
+        _currentReceiveIdx = null;
+    });
+    document.getElementById('receiveConfirm').addEventListener('click', () => {
+        const name = document.getElementById('receiveName').value.trim() || 'Receiver';
+        if (_currentReceiveIdx === null) return;
+        confirmReceive(_currentReceiveIdx, name);
+        document.getElementById('receiveModal').style.display = 'none';
+        _currentReceiveIdx = null;
+        // optional: show a toast if available
+        if (window.showToast) window.showToast('รับของสำเร็จ');
+    });
+});
+</script>
+</body>
+</html>

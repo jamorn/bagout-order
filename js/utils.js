@@ -31,12 +31,21 @@ export function generateOrderNo() {
 export function handlePOInput(input) {
     input.value = input.value.replace(/[^0-9]/g, '');
     const count = input.value.length;
-    document.getElementById('poCount').textContent = count + '/9';
+    const poCountEl = document.getElementById('poCount');
+    if (poCountEl) poCountEl.textContent = count + '/9';
     const check = document.getElementById('poCheck');
     if (count === 9) {
-        check.classList.remove('hidden');
+        if (check) check.classList.remove('hidden');
+        if (poCountEl) {
+            poCountEl.classList.remove('text-purple-300');
+            poCountEl.classList.add('text-green-600');
+        }
     } else {
-        check.classList.add('hidden');
+        if (check) check.classList.add('hidden');
+        if (poCountEl) {
+            poCountEl.classList.remove('text-green-600');
+            poCountEl.classList.add('text-purple-300');
+        }
     }
 }
 export function handleOrderNoInput(input) {
@@ -55,11 +64,18 @@ export function handleLotNoInput(input) {
     const count = input.value.length;
     const lotNoCount = document.getElementById('lotNoCount');
     lotNoCount.textContent = count + '/10';
+    const lotCheck = document.getElementById('lotCheck');
     if (count === 10) {
-        lotNoCount.classList.remove('text-gray-500');
-        lotNoCount.classList.add('text-green-600');
+        if (lotNoCount) {
+            lotNoCount.classList.remove('text-purple-300');
+            lotNoCount.classList.add('text-green-600');
+        }
+        if (lotCheck) lotCheck.classList.remove('hidden');
     } else {
-        lotNoCount.classList.remove('text-green-600');
-        lotNoCount.classList.add('text-gray-500');
+        if (lotNoCount) {
+            lotNoCount.classList.remove('text-green-600');
+            lotNoCount.classList.add('text-purple-300');
+        }
+        if (lotCheck) lotCheck.classList.add('hidden');
     }
 }
