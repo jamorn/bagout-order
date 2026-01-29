@@ -33,9 +33,13 @@
     
     <!-- Custom CSS for Purple Theme -->
     <style>
+        :root {
+            --checkbox-font-size: 1.2rem; /* increased for better readability */
+        }
         /* Custom checkbox/radio styling for purple theme */
         .checkbox-item {
             transition: all 0.3s ease;
+            font-size: var(--checkbox-font-size);
         }
         
         .checkbox-item:hover {
@@ -111,6 +115,14 @@
         
         .history-table-container tr:hover {
             background: rgba(168, 85, 247, 0.1) !important;
+        }
+
+        /* Expanded detail row font size: match checkbox items for consistent reading */
+        /* Make expanded-row text and its children visibly larger; force override where utilities apply smaller sizes */
+        .history-table-container tr.bg-purple-800\/30 td,
+        .history-table-container tr.bg-purple-800\/30 td * {
+            font-size: 18px !important; /* accessibility: override utility classes */
+            line-height: 1.6 !important;
         }
         
         .history-table-container input[type="text"] {
@@ -341,12 +353,7 @@
                                     <option value="">-- Select Approver --</option>
                                 </select>
                             </div>
-                            <div class="flex flex-col">
-                                <label for="receiveBy" class="text-sm text-purple-300 font-semibold mb-2">Receive By (Bagging)</label>
-                                <select id="receiveBy" name="receiveBy" class="bg-white/10 border border-purple-500/50 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-purple-400 w-full">
-                                    <option value="">-- Select Receiver --</option>
-                                </select>
-                            </div>
+                            <!-- Receive handled on Bagging page; removed from form -->
                         </div>
                     </div>
 
@@ -462,11 +469,26 @@
                 return;
             }
             
-            // Position dropdown below input
+            // Position dropdown below or above input depending on available space
             const rect = input.getBoundingClientRect();
-            autocompleteDiv.style.top = (rect.bottom + window.scrollY) + 'px';
+            const menuHeight = Math.min(300, autocompleteDiv.scrollHeight || 200);
+            const spaceBelow = window.innerHeight - rect.bottom;
+            const spaceAbove = rect.top;
+            // horizontal position
             autocompleteDiv.style.left = rect.left + 'px';
             autocompleteDiv.style.width = rect.width + 'px';
+            // choose vertical placement
+            if (spaceBelow < 180 && spaceAbove > spaceBelow) {
+                // open above
+                const top = Math.max(8, rect.top + window.scrollY - menuHeight - 8);
+                autocompleteDiv.style.top = top + 'px';
+                autocompleteDiv.style.maxHeight = Math.min(240, spaceAbove - 20) + 'px';
+            } else {
+                // open below
+                const top = rect.bottom + window.scrollY + 6;
+                autocompleteDiv.style.top = top + 'px';
+                autocompleteDiv.style.maxHeight = Math.min(240, spaceBelow - 20) + 'px';
+            }
             
             // Render matches
             matches.forEach(grade => {
@@ -627,7 +649,11 @@
         const orderDate = document.getElementById('orderDate');
         if (orderDate) orderDate.value = local;
         const orderNoInput = document.getElementById('orderNo');
-        if (orderNoInput) orderNoInput.value = generateOrderNo();
+        if (orderNoInput) {
+            orderNoInput.value = generateOrderNo();
+            orderNoInput.setAttribute('readonly', 'readonly');
+            orderNoInput.classList.add('bg-purple-800/20');
+        }
 
         // Initialize PO and Lot counters in case browser autofill or prefilled values exist
         const poElInit = document.getElementById('orderPO');
@@ -639,7 +665,7 @@
         const mockIssuers = ['Ananda Chaiyaporn', 'Narin Thammarat', 'Sutha Boonmee', 'Kanya Voranai', 'Prasit Wongsri'];
         const mockApprovers = ['Somchai Rattanakorn', 'Wisit Patchara', 'Nattapong Jansri', 'Preecha Anuwat', 'Ratchanee S.'];
         const mockReceivers = ['Bagging Team A', 'Bagging Team B', 'Nong Krai', 'Mali Chan', 'Somsak Bunmee'];
-        
+
         // Populate person selects
         function populatePersonSelect(id, list) {
             const sel = document.getElementById(id);
@@ -653,7 +679,6 @@
         }
         populatePersonSelect('issuerBy', mockIssuers);
         populatePersonSelect('approverBy', mockApprovers);
-        populatePersonSelect('receiveBy', mockReceivers);
 
         // Migrate existing localStorage records to include person fields (no need to clear storage)
         function migratePersonFields() {
@@ -745,6 +770,27 @@
         const submitBtn = document.querySelector('.submit-form-btn');
         const cancelBtn = document.querySelector('.cancel-edit-btn');
         submitBtn.addEventListener('click', () => {
+            // client-side validation for required fields
+            const requiredChecks = [
+                { id: 'orderDate', label: 'Date/Time' },
+                { id: 'orderNo', label: 'Order No.' },
+                { id: 'orderPO', label: 'PO Number' },
+                { id: 'bagSilo', label: 'Bagging Silo' },
+                { id: 'bagLine', label: 'Bagging Line' },
+                { id: 'lotNo', label: 'Lot No.' },
+                { id: 'bagType', label: 'Type' },
+                { id: 'quantity', label: 'Quantity' }
+            ];
+            for (const chk of requiredChecks) {
+                const el = document.getElementById(chk.id);
+                if (!el) continue;
+                const val = (el.value || '').toString().trim();
+                if (!val) {
+                    if (window.showToast) showToast(`กรุณากรอก: ${chk.label}`);
+                    el.focus();
+                    return;
+                }
+            }
             // Get checkbox/radio data
             const checkboxRadioData = getSelectedCheckboxRadioData();
             
@@ -767,7 +813,7 @@
             if (editingIndex !== null) {
                 // Update existing record
                 updateHistoryRecord(editingIndex, formData, checkboxRadioData);
-                showToast(`แก้ไขสำเร็จ! Binary 8421: ${checkboxRadioData.binary8421} (${checkboxRadioData.binaryString})`);
+                showToast(`แก้ไขสำเร็จ!: ${checkboxRadioData.binary8421} (${checkboxRadioData.binaryString})`);
                 editingIndex = null;
                 submitBtn.innerHTML = '<div class="flex items-center justify-center gap-2"><i class="fas fa-save"></i>บันทึกรายการ</div>';
                 submitBtn.classList.remove('bg-orange-600', 'hover:bg-orange-700');
@@ -775,7 +821,7 @@
             } else {
                 // Add new record
                 addHistoryRecord(formData, checkboxRadioData);
-                showToast(`บันทึกสำเร็จ! Binary 8421: ${checkboxRadioData.binary8421} (${checkboxRadioData.binaryString})`);
+                showToast(`บันทึกสำเร็จ!: ${checkboxRadioData.binary8421} (${checkboxRadioData.binaryString})`);
             }
 
             
