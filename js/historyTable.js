@@ -1,5 +1,6 @@
 // historyTable.js - Manage BAGOUT ORDER History Table (with localStorage and mock data)
 import orderHistory from '../data/order-history.js';
+import siloData from '../data/siloData.js';
 
 const HISTORY_KEY = 'bagoutOrderHistory';
 const pageSize = 15;
@@ -105,7 +106,103 @@ export function initHistoryTable(containerId = 'right-table-container') {
     if (!localStorage.getItem(HISTORY_KEY)) {
         localStorage.setItem(HISTORY_KEY, JSON.stringify(orderHistory));
     }
+    // Ensure older records have workflow fields
+    migrateHistoryDataIfNeeded();
+    // Seed PP workflow statuses once for realism
+    seedPPWorkflowIfNeeded();
     renderHistoryTable(1, containerId);
+}
+
+function migrateHistoryDataIfNeeded() {
+    const data = getHistoryData() || [];
+    let changed = false;
+    data.forEach((row) => {
+        if (!row.docStatus) {
+            row.docStatus = 'Draft';
+            changed = true;
+        }
+        if (!row.currentOwner) {
+            row.currentOwner = row.issuerBy || row.approverBy || row.receiveBy || '';
+            changed = true;
+        }
+        if (!row.stateHistory) {
+            row.stateHistory = [{ state: row.docStatus || 'Draft', by: row.currentOwner || '', at: row.orderDate || new Date().toISOString() }];
+            changed = true;
+        }
+    });
+    if (changed) saveHistoryData(data);
+}
+
+// One-time seed to make PP queue more realistic: pick 5 PP items (newest first), mark 3 as Assigned (waiting approval) and 2 as Draft
+function seedPPWorkflowIfNeeded() {
+    try {
+        console.debug('seedPPWorkflowIfNeeded: starting');
+        if (localStorage.getItem('bagoutWorkflowSeeded') === '1') {
+            console.debug('seedPPWorkflowIfNeeded: already seeded, skipping');
+            return;
+        }
+        const data = getHistoryData() || [];
+        // Filter by plant 'PP' (case-insensitive)
+        const ppItems = data.filter(r => {
+            const plant = (r.plant || '').toString().toUpperCase();
+            if (plant === 'PP') return true;
+            // fallback: infer plant from bagSilo using siloData
+            if (r.bagSilo) {
+                const s = siloData.find(s => s.SiloName === r.bagSilo);
+                if (s && (s.Plant || '').toString().toUpperCase() === 'PP') return true;
+            }
+            return false;
+        });
+        console.debug('seedPPWorkflowIfNeeded: ppItems found =', ppItems.length);
+        if (ppItems.length === 0) {
+            // nothing to seed right now — keep flag unset so future attempts can run
+            console.debug('seedPPWorkflowIfNeeded: no PP items to seed, leaving flag unset');
+            return;
+        }
+        // Sort by Order No numeric desc (newest first on UI) — parse leading number before '/'
+        ppItems.sort((a, b) => {
+            const numA = parseInt((a.orderNo || '').toString().split('/')[0], 10) || 0;
+            const numB = parseInt((b.orderNo || '').toString().split('/')[0], 10) || 0;
+            return numB - numA;
+        });
+        const toSeed = ppItems.slice(0, 5);
+        const changedRows = [];
+        // Apply: first 3 -> Draft (newest), next 2 -> Assigned (older)
+        toSeed.forEach((row, idx) => {
+            // Prefer matching by `id` if present
+            let actualIdx = -1;
+            if (row.id !== undefined) {
+                actualIdx = data.findIndex(r => r.id === row.id);
+            }
+            if (actualIdx === -1) {
+                actualIdx = data.findIndex(r => r.orderNo === row.orderNo && r.orderPO === row.orderPO && r.orderDate === row.orderDate);
+            }
+            if (actualIdx === -1) return;
+            if (idx < 3) {
+                // Newest -> Draft (waiting)
+                data[actualIdx].docStatus = 'Draft';
+                if (!Array.isArray(data[actualIdx].stateHistory)) data[actualIdx].stateHistory = [];
+                data[actualIdx].stateHistory.push({ state: 'Draft', by: data[actualIdx].currentOwner || '', at: new Date().toISOString() });
+                changedRows.push({ idx: actualIdx, orderNo: data[actualIdx].orderNo, status: 'Draft' });
+            } else {
+                // Older within the 5 -> Assigned
+                data[actualIdx].docStatus = 'Assigned';
+                data[actualIdx].currentOwner = data[actualIdx].approverBy || data[actualIdx].currentOwner || 'Shift Sup.';
+                if (!Array.isArray(data[actualIdx].stateHistory)) data[actualIdx].stateHistory = [];
+                data[actualIdx].stateHistory.push({ state: 'Assigned', by: data[actualIdx].currentOwner, at: new Date().toISOString() });
+                changedRows.push({ idx: actualIdx, orderNo: data[actualIdx].orderNo, status: 'Assigned' });
+            }
+        });
+        if (changedRows.length > 0) {
+            saveHistoryData(data);
+            localStorage.setItem('bagoutWorkflowSeeded', '1');
+            console.debug('seedPPWorkflowIfNeeded: applied seed to rows:', changedRows);
+        } else {
+            console.debug('seedPPWorkflowIfNeeded: nothing actually changed during seeding');
+        }
+    } catch (e) {
+        console.error('seedPPWorkflowIfNeeded error', e);
+    }
 }
 
 export function getHistoryData() {
@@ -147,6 +244,11 @@ export function addHistoryRecord(formData, checkboxRadioData) {
         binaryString: checkboxRadioData.binaryString || '0000000',
         selectedOptions: checkboxRadioData.selectedOptions || '',
         remarks: remarks
+        ,
+        // workflow fields
+        docStatus: formData.docStatus || 'Draft',
+        currentOwner: formData.issuerBy || formData.approverBy || formData.receiveBy || '',
+        stateHistory: [{ state: formData.docStatus || 'Draft', by: formData.issuerBy || '', at: new Date().toISOString() }]
     };
     
     historyData.push(newRecord);
@@ -189,6 +291,10 @@ export function updateHistoryRecord(index, formData, checkboxRadioData) {
     };
     
     historyData[index] = updatedRecord;
+        // ensure workflow fields exist
+        if (!historyData[index].docStatus) historyData[index].docStatus = 'Draft';
+        if (!historyData[index].currentOwner) historyData[index].currentOwner = historyData[index].issuerBy || historyData[index].approverBy || historyData[index].receiveBy || '';
+        if (!Array.isArray(historyData[index].stateHistory)) historyData[index].stateHistory = [{ state: historyData[index].docStatus, by: historyData[index].currentOwner, at: new Date().toISOString() }];
     saveHistoryData(historyData);
 }
 
@@ -251,18 +357,25 @@ export function renderHistoryTable(page = 1, containerId = 'right-table-containe
     html += `<th class='px-3 py-3 text-left text-xs font-bold text-purple-200 uppercase tracking-wider'>Silo</th>`;
     html += `<th class='px-3 py-3 text-left text-xs font-bold text-purple-200 uppercase tracking-wider'>Type</th>`;
     html += `<th class='px-3 py-3 text-right text-xs font-bold text-purple-200 uppercase tracking-wider'>Qty</th>`;
+    html += `<th class='px-3 py-3 text-center text-xs font-bold text-purple-200 uppercase tracking-wider'>Status</th>`;
     html += `<th class='px-3 py-3 text-center text-xs font-bold text-purple-200 uppercase tracking-wider'>Actions</th>`;
     html += `</tr></thead>`;
     html += `<tbody class='divide-y divide-purple-500/20'>`;
     
     if (rows.length === 0) {
-        html += `<tr><td colspan='9' class='px-3 py-8 text-center text-purple-300'>`;
+        html += `<tr><td colspan='10' class='px-3 py-8 text-center text-purple-300'>`;
         html += searchTerm ? 'ไม่พบข้อมูลที่ค้นหา' : 'ยังไม่มีข้อมูล';
         html += `</td></tr>`;
     } else {
         rows.forEach((row, i) => {
             const actualIdx = allData.findIndex(r => r.orderNo === row.orderNo && r.orderPO === row.orderPO);
             const isExpanded = expandedRows.has(actualIdx);
+            const status = row.docStatus || 'Draft';
+            // Use inline colors for badges to avoid Tailwind JIT missing dynamic classes
+            let statusBg = '#374151'; // gray-700
+            if (status === 'Approved') statusBg = '#10B981';
+            else if (status === 'Assigned' || status === 'In Progress') statusBg = '#3B82F6';
+            else if (status === 'Rejected') statusBg = '#EF4444';
             
             // Main row
             html += `<tr class='hover:bg-purple-600/20 transition-colors border-b border-purple-500/10'>`;
@@ -279,11 +392,16 @@ export function renderHistoryTable(page = 1, containerId = 'right-table-containe
             html += `<td class='px-3 py-3 text-sm text-purple-200'>${row.bagSilo}</td>`;
             html += `<td class='px-3 py-3 text-sm text-purple-100'>${row.bagType}</td>`;
             html += `<td class='px-3 py-3 text-sm text-white text-right font-semibold'>${row.quantity}</td>`;
+            // Status column
+            html += `<td class='px-3 py-3 text-sm text-center'><span class='inline-block px-2 py-1 text-xs font-semibold rounded' style='background:${statusBg};color:#fff'>${status}</span></td>`;
             html += `<td class='px-3 py-3 text-sm text-center'>`;
+            // Quick approve/unapprove button (Shift Sup shortcut)
+            const quickIcon = status === 'Approved' ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-check';
+            html += `<button class='text-yellow-400 hover:text-yellow-300 mr-2 transition-colors quick-approve bg-transparent border-none p-1 rounded hover:bg-yellow-500/10' data-idx='${actualIdx}' title='Quick Approve/Unapprove (Shift Sup)'><i class="${quickIcon} text-sm"></i></button>`;
             html += `<button class='text-blue-400 hover:text-blue-300 mr-3 transition-colors history-edit bg-transparent border-none p-1 rounded hover:bg-blue-500/20' data-idx='${actualIdx}' title='นำข้อมูลไปยังฟอร์ม'>`;
             html += `<i class="fas fa-pencil-alt text-sm"></i>`;
             html += `</button>`;
-            html += `<button class='text-red-400 hover:text-red-300 transition-colors history-delete bg-transparent border-none p-1 rounded hover:bg-red-500/20' data-idx='${actualIdx}' title='ลบรายการนี้'>`;
+            html += `<button class='text-red-400 hover:text-red-300 transition-colors history-delete bg-transparent border-none p-1 rounded hover:bg-red-500/20' data-idx='${actualIdx}' aria-label='ลบรายการนี้'>`;
             html += `<i class="fas fa-eraser text-sm"></i>`;
             html += `</button>`;
             html += `</td>`;
@@ -292,7 +410,7 @@ export function renderHistoryTable(page = 1, containerId = 'right-table-containe
             // Detail subrow (expanded)
             if (isExpanded) {
                 html += `<tr class='bg-purple-800/30 border-b border-purple-500/20'>`;
-                html += `<td colspan='9' class='px-12 py-4'>`;
+                html += `<td colspan='10' class='px-12 py-4'>`;
                 html += `<div class='grid grid-cols-2 gap-4 text-sm'>`;
                 // Left column
                 html += `<div><span class='font-semibold text-purple-300'>Line:</span> <span class='text-purple-200'>${row.bagLine}</span></div>`;
@@ -323,6 +441,13 @@ export function renderHistoryTable(page = 1, containerId = 'right-table-containe
                         (row.receiveAt ? `<span class='ml-2 text-purple-300 text-xs'>• ${formatTimestamp(row.receiveAt)}</span>` : '') +
                     `</span></div>`;
                 html += `</div></div>`;
+                // Action buttons (workflow)
+                html += `<div class='flex justify-end items-center gap-2'>`;
+                html += `<button class='px-3 py-1 text-xs rounded bg-blue-600 hover:bg-blue-500 workflow-action' data-idx='${actualIdx}' data-action='assign'>Assign to me</button>`;
+                html += `<button class='px-3 py-1 text-xs rounded bg-green-500 hover:bg-green-400 workflow-action' data-idx='${actualIdx}' data-action='approve'>Approve</button>`;
+                html += `<button class='px-3 py-1 text-xs rounded bg-red-500 hover:bg-red-400 workflow-action' data-idx='${actualIdx}' data-action='reject'>Reject</button>`;
+                html += `</div>`;
+
                 html += `</div>`;
                 // Full width details below
                 html += `<div><span class='font-semibold text-purple-300'>Binary 8421:</span> <span class='text-purple-100 font-mono'>${row.binary8421} (${row.binaryString})</span></div>`;
@@ -332,6 +457,14 @@ export function renderHistoryTable(page = 1, containerId = 'right-table-containe
                         html += `<li>${remark}</li>`;
                     });
                     html += `</ul></div>`;
+                }
+                // Timeline (stateHistory)
+                if (Array.isArray(row.stateHistory) && row.stateHistory.length > 0) {
+                    html += `<div class='col-span-2 mt-4'><span class='font-semibold text-purple-300'>Timeline:</span><div class='mt-2 space-y-2 text-sm'>`;
+                    row.stateHistory.forEach(entry => {
+                        html += `<div class='flex items-center gap-3'><span class='text-purple-300 w-36'>${formatTimestamp(entry.at)}</span><span class='text-purple-200'>${entry.state} ${entry.by ? `• by ${entry.by}` : ''}</span></div>`;
+                    });
+                    html += `</div></div>`;
                 }
                 html += `</div>`;
                 html += `</td>`;
@@ -414,5 +547,225 @@ export function renderHistoryTable(page = 1, containerId = 'right-table-containe
             const filteredData = filterData(getHistoryData(), searchTerm);
             if ((page - 1) * pageSize + pageSize < filteredData.length) renderHistoryTable(page + 1, containerId, searchTerm);
         });
+        // Workflow action handlers (Assign / Approve / Reject)
+        const applyWorkflowAction = (idx, action) => {
+            const data = getHistoryData();
+            if (!data || !data[idx]) return;
+            const row = data[idx];
+            let by = '';
+            if (action === 'assign') {
+                by = prompt('ชื่อผู้รับผิดชอบ (มอบหมายให้):', '') || 'Me';
+                row.currentOwner = by;
+                row.docStatus = 'Assigned';
+            } else if (action === 'approve') {
+                by = row.approverBy || prompt('ชื่อผู้อนุมัติ:', '') || 'Approver';
+                row.docStatus = 'Approved';
+            } else if (action === 'reject') {
+                by = row.approverBy || prompt('ชื่อผู้อนุมัติ (reject):', '') || 'Approver';
+                row.docStatus = 'Rejected';
+            }
+            if (!Array.isArray(row.stateHistory)) row.stateHistory = [];
+            row.stateHistory.push({ state: row.docStatus, by: by, at: new Date().toISOString() });
+            saveHistoryData(data);
+            renderHistoryTable(page, containerId, searchTerm);
+        };
+
+        container.querySelectorAll('.workflow-action').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const idx = +btn.dataset.idx;
+                const action = btn.dataset.action;
+                applyWorkflowAction(idx, action);
+            });
+        });
+                // Quick-approve modal helpers (replaces native confirm)
+                const ensureQuickApproveModal = () => {
+                        if (document.getElementById('quick-approve-modal')) return;
+                        const modalHtml = `
+                        <div id="quick-approve-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4" aria-hidden="true">
+                            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-close="backdrop"></div>
+                            <div class="relative w-full max-w-md mx-auto bg-purple-900/95 border border-purple-600/30 rounded-lg shadow-lg overflow-hidden"> 
+                                <div class="p-4 border-b border-purple-700/30 flex items-start gap-3">
+                                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-orange-400 flex items-center justify-center text-purple-900 font-bold">OK</div>
+                                    <div class="flex-1">
+                                        <h3 class="text-lg font-semibold text-white">Quick Approve</h3>
+                                        <p class="text-sm text-purple-300 mt-1">ยืนยันการอนุมัติหรือยกเลิกอย่างรวดเร็ว โดย Shift Sup.</p>
+                                    </div>
+                                    <button class="ml-2 text-purple-300 hover:text-white close-qa" aria-label="ปิด">✕</button>
+                                </div>
+                                <div class="p-4 space-y-3">
+                                    <div class="text-sm text-purple-200">Order: <span id="qa-order-no" class="font-semibold text-white">-</span></div>
+                                    <div class="text-sm text-purple-200">Current Status: <span id="qa-current-status" class="font-semibold text-white">-</span></div>
+                                    <div>
+                                        <label class="block text-xs text-purple-300 mb-1">ชื่อผู้อนุมัติ / ชื่อผู้ยกเลิก</label>
+                                        <input id="qa-approver-name" class="w-full px-3 py-2 rounded bg-purple-800/40 border border-purple-700 text-white placeholder-purple-400 focus:outline-none" placeholder="Shift Sup." />
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-purple-300 mb-1">หมายเหตุ (ไม่บังคับ)</label>
+                                        <textarea id="qa-comment" rows="3" class="w-full px-3 py-2 rounded bg-purple-800/40 border border-purple-700 text-white placeholder-purple-400 focus:outline-none" placeholder="เหตุผล / หมายเหตุ"></textarea>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-purple-800/20 flex justify-end gap-3">
+                                    <button class="px-4 py-2 rounded bg-transparent border border-purple-600 text-purple-200 hover:bg-purple-700/40 close-qa">ยกเลิก</button>
+                                    <button id="qa-confirm-btn" class="px-4 py-2 rounded bg-yellow-400 text-purple-900 font-semibold hover:brightness-95">ยืนยัน</button>
+                                </div>
+                            </div>
+                        </div>`;
+                        const wrapper = document.createElement('div');
+                        wrapper.innerHTML = modalHtml;
+                        document.body.appendChild(wrapper.firstElementChild);
+
+                        // Attach handlers
+                        const modal = document.getElementById('quick-approve-modal');
+                        modal.querySelectorAll('.close-qa').forEach(b => b.addEventListener('click', () => closeQuickApproveModal()));
+                        modal.querySelector('[data-close="backdrop"]').addEventListener('click', () => closeQuickApproveModal());
+                        modal.querySelector('#qa-confirm-btn').addEventListener('click', () => {
+                                const idx = +modal.dataset.idx;
+                                const name = (modal.querySelector('#qa-approver-name').value || 'Shift Sup.').trim();
+                                const comment = modal.querySelector('#qa-comment').value || '';
+                                // perform toggle
+                                const data = getHistoryData();
+                                if (!data || !data[idx]) return closeQuickApproveModal();
+                                const row = data[idx];
+                                const isApproved = (row.docStatus === 'Approved');
+                                if (isApproved) {
+                                        row.docStatus = 'Draft';
+                                        if (!Array.isArray(row.stateHistory)) row.stateHistory = [];
+                                        row.stateHistory.push({ state: 'Draft', by: name, at: new Date().toISOString(), note: comment });
+                                } else {
+                                        row.docStatus = 'Approved';
+                                        row.approverBy = row.approverBy || name;
+                                        row.approverAt = new Date().toISOString();
+                                        row.currentOwner = row.currentOwner || row.approverBy;
+                                        if (!Array.isArray(row.stateHistory)) row.stateHistory = [];
+                                        row.stateHistory.push({ state: 'Approved', by: row.approverBy, at: row.approverAt, note: comment });
+                                }
+                                saveHistoryData(data);
+                                closeQuickApproveModal();
+                                renderHistoryTable(page, containerId, searchTerm);
+                                try { renderBaggingTable(1, 'bagging-history-table'); } catch (e) {}
+                        });
+                        // ESC to close
+                        document.addEventListener('keydown', (e) => {
+                                if (e.key === 'Escape') closeQuickApproveModal();
+                        });
+                };
+
+                const openQuickApproveModal = (idx) => {
+                        ensureQuickApproveModal();
+                        const modal = document.getElementById('quick-approve-modal');
+                        if (!modal) return;
+                        const data = getHistoryData();
+                        const row = data && data[idx] ? data[idx] : null;
+                        modal.dataset.idx = idx;
+                        modal.querySelector('#qa-order-no').textContent = row ? (row.orderNo || '-') : '-';
+                        modal.querySelector('#qa-current-status').textContent = row ? (row.docStatus || 'Draft') : '-';
+                        modal.querySelector('#qa-approver-name').value = 'Shift Sup.';
+                        modal.querySelector('#qa-comment').value = '';
+                        modal.classList.remove('hidden');
+                        modal.setAttribute('aria-hidden', 'false');
+                        // focus input
+                        setTimeout(() => modal.querySelector('#qa-approver-name').focus(), 50);
+                };
+
+                const closeQuickApproveModal = () => {
+                        const modal = document.getElementById('quick-approve-modal');
+                        if (!modal) return;
+                        modal.classList.add('hidden');
+                        modal.setAttribute('aria-hidden', 'true');
+                };
+
+                container.querySelectorAll('.quick-approve').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                const idx = +btn.dataset.idx;
+                                openQuickApproveModal(idx);
+                        });
+                });
     }
+}
+
+// Render a Bagging-focused table (uses shared bagoutOrderHistory)
+export function renderBaggingTable(page = 1, containerId = 'bagging-history-table') {
+    const allData = getHistoryData() || [];
+    // Show records ready for bagging: Approved / Assigned / In Progress / Received
+    const data = allData.filter(r => {
+        const s = (r.docStatus || 'Draft');
+        return s === 'Approved' || s === 'Assigned' || s === 'In Progress' || s === 'Received';
+    });
+    const total = data.length;
+    const start = (page - 1) * pageSize;
+    const rows = data.slice(start, start + pageSize);
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    let html = `<div class='w-full mx-auto history-table-container'>`;
+    html += `<div class='mb-4'><h3 class='text-lg font-semibold text-purple-200'>Bagging Queue</h3></div>`;
+    html += `<div class='overflow-x-auto rounded-lg border border-purple-500/30 shadow-lg'>`;
+    html += `<table class='min-w-full divide-y divide-purple-500/20 bg-purple-900/20'>`;
+    html += `<thead class='bg-purple-700/20'><tr>`;
+    html += `<th class='px-3 py-3 text-left text-xs font-bold text-purple-200 uppercase'>#</th>`;
+    html += `<th class='px-3 py-3 text-left text-xs font-bold text-purple-200 uppercase'>Plant</th>`;
+    html += `<th class='px-3 py-3 text-left text-xs font-bold text-purple-200 uppercase'>Date</th>`;
+    html += `<th class='px-3 py-3 text-left text-xs font-bold text-purple-200 uppercase'>PO</th>`;
+    html += `<th class='px-3 py-3 text-left text-xs font-bold text-purple-200 uppercase'>Silo</th>`;
+    html += `<th class='px-3 py-3 text-left text-xs font-bold text-purple-200 uppercase'>Type</th>`;
+    html += `<th class='px-3 py-3 text-right text-xs font-bold text-purple-200 uppercase'>Qty</th>`;
+    html += `<th class='px-3 py-3 text-left text-xs font-bold text-purple-200 uppercase'>Status</th>`;
+    html += `<th class='px-3 py-3 text-center text-xs font-bold text-purple-200 uppercase'>Action</th>`;
+    html += `</tr></thead><tbody class='divide-y divide-purple-500/20'>`;
+
+    if (rows.length === 0) {
+        html += `<tr><td colspan='9' class='px-3 py-8 text-center text-purple-300'>No items in bagging queue</td></tr>`;
+    } else {
+        rows.forEach((row, i) => {
+            const actualIdx = allData.findIndex(r => r.orderNo === row.orderNo && r.orderPO === row.orderPO && r.orderDate === row.orderDate);
+            const status = row.docStatus || 'Draft';
+            let statusBg = '#374151';
+            if (status === 'Approved') statusBg = '#10B981';
+            else if (status === 'Assigned' || status === 'In Progress') statusBg = '#3B82F6';
+            else if (status === 'Rejected') statusBg = '#EF4444';
+
+            html += `<tr class='hover:bg-purple-600/10'>`;
+            html += `<td class='px-3 py-3 text-sm text-purple-200'>${start + i + 1}</td>`;
+            html += `<td class='px-3 py-3 text-sm text-purple-200'>${row.plant || '-'}</td>`;
+            html += `<td class='px-3 py-3 text-sm text-purple-200'>${row.orderDate}</td>`;
+            html += `<td class='px-3 py-3 text-sm text-purple-200'>${row.orderPO}</td>`;
+            html += `<td class='px-3 py-3 text-sm text-purple-200'>${row.bagSilo}</td>`;
+            html += `<td class='px-3 py-3 text-sm text-purple-200'>${row.bagType}</td>`;
+            html += `<td class='px-3 py-3 text-sm text-white text-right font-semibold'>${row.quantity}</td>`;
+            html += `<td class='px-3 py-3 text-sm text-center'><span style='background:${statusBg};color:#fff;padding:4px 8px;border-radius:6px;font-size:12px'>${status}</span></td>`;
+            html += `<td class='px-3 py-3 text-center'><button class='px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white bagging-receive' data-idx='${actualIdx}'>รับ</button></td>`;
+            html += `</tr>`;
+        });
+    }
+
+    html += `</tbody></table></div></div>`;
+    container.innerHTML = html;
+
+    // attach events to receive buttons
+    container.querySelectorAll('.bagging-receive').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const idx = +btn.dataset.idx;
+            // open modal via window helper (defined in index.html)
+            if (window.openReceiveModal) window.openReceiveModal(idx);
+        });
+    });
+}
+
+// Confirm receive action invoked from modal (index.html will import and call this)
+export function confirmReceive(idx, receiverName) {
+    const data = getHistoryData();
+    if (!data || !data[idx]) return false;
+    const row = data[idx];
+    row.receiveBy = receiverName || row.receiveBy || 'Receiver';
+    row.receiveAt = new Date().toISOString();
+    row.docStatus = 'Received';
+    if (!Array.isArray(row.stateHistory)) row.stateHistory = [];
+    row.stateHistory.push({ state: 'Received', by: row.receiveBy, at: row.receiveAt });
+    saveHistoryData(data);
+    // re-render both views if present
+    try { renderBaggingTable(1, 'bagging-history-table'); } catch (e) {}
+    try { renderHistoryTable(1, 'main-history-table'); } catch (e) {}
+    return true;
 }
