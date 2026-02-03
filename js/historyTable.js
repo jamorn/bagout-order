@@ -316,6 +316,24 @@ function filterData(data, searchTerm) {
 export function renderHistoryTable(page = 1, containerId = 'right-table-container', searchTerm = currentSearchTerm) {
     currentSearchTerm = searchTerm;
     const allData = getHistoryData() || [];
+    // Preserve search input state (focus + selection) to avoid losing cursor on re-render
+    const container = document.getElementById(containerId);
+    let prevSearchState = null;
+    if (container) {
+        const prevSearch = container.querySelector('#history-search');
+        if (prevSearch) {
+            try {
+                prevSearchState = {
+                    value: prevSearch.value,
+                    selectionStart: prevSearch.selectionStart,
+                    selectionEnd: prevSearch.selectionEnd,
+                    hadFocus: (document.activeElement === prevSearch)
+                };
+            } catch (e) {
+                prevSearchState = null;
+            }
+        }
+    }
     
     // Sort by Order No DESC (newest first)
     const sortedData = [...allData].sort((a, b) => {
@@ -328,7 +346,6 @@ export function renderHistoryTable(page = 1, containerId = 'right-table-containe
     const total = data.length;
     const start = (page - 1) * pageSize;
     const rows = data.slice(start, start + pageSize);
-    const container = document.getElementById(containerId);
     if (!container) return;
     
     let html = `<div class='w-full mx-auto history-table-container'>`;
@@ -487,6 +504,28 @@ export function renderHistoryTable(page = 1, containerId = 'right-table-containe
     html += `</div></div>`;
     
     container.innerHTML = html;
+    // Restore search input state if we captured it earlier
+    try {
+        if (prevSearchState) {
+            const newSearch = container.querySelector('#history-search');
+            if (newSearch) {
+                newSearch.value = prevSearchState.value || newSearch.value || '';
+                if (typeof prevSearchState.selectionStart === 'number' && typeof prevSearchState.selectionEnd === 'number') {
+                    try {
+                        newSearch.setSelectionRange(prevSearchState.selectionStart, prevSearchState.selectionEnd);
+                    } catch (e) {
+                        // ignore if browser doesn't allow selection at this time
+                    }
+                }
+                if (prevSearchState.hadFocus) {
+                    // restore focus in next tick to ensure element is attached
+                    setTimeout(() => newSearch.focus(), 0);
+                }
+            }
+        }
+    } catch (e) {
+        console.error('restore search state failed', e);
+    }
     
     // Attach events
     if (container) {
