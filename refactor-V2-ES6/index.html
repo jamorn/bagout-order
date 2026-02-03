@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="#"><!-- fix favicon.ico -->
+    <title>BAGOUT ORDER - PP Plant (ES6 Version)</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <!-- Header / Navbar -->
+    <header class="header-gradient shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-industry text-yellow-400 text-2xl"></i>
+                    <h1 class="text-xl md:text-2xl font-bold header-text">BAGOUT ORDER</h1>
+                    <span class="hidden sm:inline-block px-2 py-1 nav-bg-active rounded text-xs header-text">Production System</span>
+                </div>
+                
+                <!-- Navigation Units -->
+                <nav class="flex items-center gap-2">
+                    <a href="index.html" class="nav-unit active px-4 py-2 rounded-lg nav-bg-active header-text font-semibold transition nav-bg-hover">
+                        <i class="fas fa-cube mr-2"></i>PP
+                    </a>
+                    <a href="hdpe.html" class="nav-unit px-4 py-2 rounded-lg header-text-muted font-medium transition nav-bg-hover">
+                        <i class="fas fa-oil-can mr-2"></i>HDPE
+                    </a>
+                    <a href="ppc.html" class="nav-unit px-4 py-2 rounded-lg header-text-muted font-medium transition nav-bg-hover">
+                        <i class="fas fa-layer-group mr-2"></i>PPC
+                    </a>
+                    <a href="bagging.html" class="nav-unit px-4 py-2 rounded-lg header-text-muted font-medium transition nav-bg-hover">
+                        <i class="fas fa-boxes mr-2"></i>Bagging
+                    </a>
+                </nav>
+                
+                <div class="flex items-center gap-4">
+                    <label for="themeSelect" class="text-sm header-text-muted hidden sm:inline">Theme</label>
+                    <select id="themeSelect" class="theme-select-bg rounded px-2 py-1 text-sm">
+                        <option value="purple">Purple (default)</option>
+                        <option value="emerald">Emerald</option>
+                    </select>
+                    <span class="text-sm header-text-muted">Production Management System</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Form Container -->
+        <div class="form-container">
+            <!-- Form Header -->
+            <div class="form-header">
+                <i class="fas fa-box"></i>
+                <h1>BAGOUT ORDER - PP Plant</h1>
+                <span class="ml-auto text-sm text-purple-300">ES6 Modules Version</span>
+            </div>
+            
+            <!-- Form Content -->
+            <form id="bagout-form">
+                <!-- Date & Order Info -->
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div class="form-group">
+                        <label for="orderDate">
+                            <i class="fas fa-calendar-alt mr-1"></i>
+                            Date/Time
+                        </label>
+                        <input type="datetime-local" id="orderDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="orderNo">
+                            <i class="fas fa-hashtag mr-1"></i>
+                            Order No.
+                        </label>
+                        <input type="text" id="orderNo" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="orderPO">
+                            <i class="fas fa-file-invoice mr-1"></i>
+                            PO Number
+                            <span id="poCount" class="text-xs ml-2">0/9</span>
+                            <i id="poCheck" class="fas fa-check-circle text-green-400 ml-1 hidden"></i>
+                        </label>
+                        <input type="text" id="orderPO" maxlength="9" required>
+                    </div>
+                </div>
+                
+                <!-- Person Selection -->
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div class="form-group">
+                        <label for="issuerBy">
+                            <i class="fas fa-user mr-1"></i>
+                            Issuer By
+                        </label>
+                        <select id="issuerBy">
+                            <option value="">-- เลือก --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="approverBy">
+                            <i class="fas fa-user-check mr-1"></i>
+                            Approver By
+                        </label>
+                        <select id="approverBy">
+                            <option value="">-- เลือก --</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Receive By removed from PP form; handled in Bagging page -->
+                </div>
+                
+                <!-- Production Details -->
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label for="bagSilo">
+                            <i class="fas fa-warehouse mr-1"></i>
+                            Bagging Silo
+                        </label>
+                        <select id="bagSilo" required>
+                            <option value="">-- เลือก Silo --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bagLine">
+                            <i class="fas fa-industry mr-1"></i>
+                            Bagging Line
+                        </label>
+                        <select id="bagLine" disabled required>
+                            <option value="">-- เลือก Line --</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div class="form-group">
+                        <label for="lotNo">
+                            <i class="fas fa-barcode mr-1"></i>
+                            Lot No.
+                            <span id="lotNoCount" class="text-xs ml-2">0/10</span>
+                            <i id="lotCheck" class="fas fa-check-circle text-green-400 ml-1 hidden"></i>
+                        </label>
+                        <input type="text" id="lotNo" maxlength="10" required>
+                    </div>
+                    
+                    <div class="form-group autocomplete-container">
+                        <label for="bagType">
+                            <i class="fas fa-box-open mr-1"></i>
+                            Type
+                        </label>
+                        <input type="text" id="bagType" placeholder="ค้นหา Grade..." required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="quantity">
+                            <i class="fas fa-weight mr-1"></i>
+                            Quantity (Bags)
+                        </label>
+                        <input type="number" id="quantity" min="0" max="9999" step="0.05" value="150.00" required inputmode="decimal">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label for="remarkType">
+                            <i class="fas fa-tag mr-1"></i>
+                            Remark Type
+                        </label>
+                        <select id="remarkType">
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="PREMIUM">PREMIUM</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Packaging Options -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-purple-200 mb-4 flex items-center gap-2">
+                        <i class="fas fa-check-square"></i>
+                        Packaging Options
+                    </h2>
+                    
+                    <div id="checkboxGroup"></div>
+                </div>
+                
+                <!-- Remarks Section -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-purple-200 mb-4 flex items-center gap-2">
+                        <i class="fas fa-comment-alt"></i>
+                        Remarks
+                        <span class="text-sm font-normal text-purple-300">(สูงสุด 5 รายการ)</span>
+                    </h2>
+                    
+                    <div id="remarksList" class="remark-list"></div>
+                    
+                    <button type="button" class="add-remark-btn">
+                        <i class="fas fa-plus mr-2"></i>
+                        เพิ่ม Remark
+                    </button>
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="flex gap-4 justify-end">
+                    <button type="button" class="btn btn-secondary cancel-edit-btn hidden">
+                        <i class="fas fa-times"></i>
+                        ยกเลิก
+                    </button>
+                    
+                    <button type="button" class="btn btn-primary submit-form-btn">
+                        <i class="fas fa-save"></i>
+                        บันทึกรายการ
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- History Table -->
+        <div id="history-table-container" class="mt-8"></div>
+    </div>
+    
+    <!-- Main Script with ES6 Modules -->
+    <script type="module">
+        import { initForm, attachHistoryActions } from './js/formData.js';
+        import { initHistoryTable, renderHistoryTable } from './js/historyTable.js';
+        import { renderCheckboxes } from './js/checkboxGroup.js';
+        import { initCustomDropdowns } from './js/customDropdown.js';
+        import { initTheme } from './js/theme.js';
+        
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Initializing BAGOUT ORDER - ES6 Version...');
+            
+            // Render checkbox groups (checkboxGroup also called inside initForm)
+            renderCheckboxes('checkboxGroup');
+
+            // Initialize form (populates selects)
+            initForm();
+
+            // Convert native selects to custom dropdowns
+            initCustomDropdowns();
+            
+            // Initialize and render history table
+            initHistoryTable('history-table-container');
+            
+            // Attach history table action handlers
+            // Need to re-attach after each render
+            const observer = new MutationObserver(() => {
+                attachHistoryActions();
+            });
+            
+            const historyContainer = document.getElementById('history-table-container');
+            if (historyContainer) {
+                observer.observe(historyContainer, { childList: true, subtree: true });
+            }
+            
+            // Initial attach
+            setTimeout(() => attachHistoryActions(), 100);
+            // Initialize theme selector
+            try { initTheme(); } catch (e) { console.warn('Theme init failed', e); }
+            
+            console.log('BAGOUT ORDER initialized successfully!');
+        });
+    </script>
+</body>
+</html>
